@@ -5,25 +5,60 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nextflection.ClassType;
+import org.nextflection.ConstructorMember;
+import org.nextflection.FieldMember;
+import org.nextflection.MethodMember;
 import org.nextflection.ObjectType;
 import org.nextflection.Reflector;
 import org.nextflection.TypeVariable;
 
 public class DefaultClassType extends AbstractElement implements ClassType {
 
-	private Class<?> clazz;
-	private List<TypeVariable> typeParameters = new ArrayList<TypeVariable>();
+	private final Class<?> clazz;
+	private final List<TypeVariable> typeParameters;
+	private final List<MethodMember> methods;
+	private final List<FieldMember> fields;
+	private final List<ConstructorMember> constructors;
 
 	public DefaultClassType(Class<?> clazz, Reflector creator) {
 		super(creator);
 		this.clazz = clazz;
-		this.populateTypeParameters();
+		this.typeParameters = this.createTypeParameters();
+		this.methods = this.createMethods();
+		this.fields = this.createFields();
+		this.constructors = this.createConstructors();
 	}
 
-	private void populateTypeParameters() {
+	protected DefaultClassType(Class<?> clazz, List<TypeVariable> typeParameters, List<MethodMember> methods, List<FieldMember> fields, List<ConstructorMember> constructors, Reflector creator){
+		super(creator);
+		this.clazz = clazz;
+		this.typeParameters = typeParameters;
+		this.methods = methods;
+		this.fields = fields;
+		this.constructors = constructors;
+	}
+
+	private List<TypeVariable> createTypeParameters() {
+		List<TypeVariable> params = new ArrayList<TypeVariable>(clazz.getTypeParameters().length);
 		for (java.lang.reflect.TypeVariable<? extends Class<?>> var : clazz.getTypeParameters()) {
-			typeParameters.add(reflector.reflect(var, this));
+			params.add(reflector.reflect(var, this));
 		}
+		return params;
+	}
+	
+	private List<ConstructorMember> createConstructors() {
+		// TODO: code it
+		return null;
+	}
+
+	private List<FieldMember> createFields() {
+		// TODO: code it
+		return null;
+	}
+
+	private List<MethodMember> createMethods() {
+		// TODO: code it
+		return null;
 	}
 
 	public List<TypeVariable> getTypeParameters() {
