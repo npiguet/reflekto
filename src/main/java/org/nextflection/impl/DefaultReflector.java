@@ -7,21 +7,17 @@ import org.nextflection.Constructor;
 import org.nextflection.Field;
 import org.nextflection.GenericDeclaration;
 import org.nextflection.Method;
-import org.nextflection.ObjectType;
 import org.nextflection.Type;
 import org.nextflection.TypeVariable;
 
 public class DefaultReflector implements FullReflector {
 
-	public Type reflect(java.lang.reflect.Type type) {
-		if (type instanceof Class) {
-			return reflect((Class<?>) type);
+	public Type reflect(Class<?> clazz) {
+		if (clazz.isPrimitive()) {
+			return new DefaultPrimitiveType(clazz, this);
+		} else if (clazz.isArray()) {
+			return new DefaultArrayType(clazz, this);
 		}
-
-		throw new UnsupportedOperationException("Type " + type + " (" + type.getClass().getName() + ") not supported yet");
-	}
-
-	public ObjectType reflect(Class<?> clazz) {
 		return new DefaultClassType(clazz, this);
 	}
 

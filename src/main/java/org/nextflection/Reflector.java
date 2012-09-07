@@ -2,7 +2,6 @@ package org.nextflection;
 
 public interface Reflector {
 
-	public ObjectType reflect(Class<?> clazz);
+	public Type reflect(Class<?> clazz);
 
-	public Type reflect(java.lang.reflect.Type type);
 }

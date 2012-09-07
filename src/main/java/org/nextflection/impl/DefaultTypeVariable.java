@@ -25,7 +25,7 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	private void populateBounds() {
 		for (java.lang.reflect.Type t : typeVariable.getBounds()) {
-			bounds.add(reflector.reflect(t));
+			//bounds.add(reflector.reflect(t));
 		}
 	}
 
@@ -62,5 +62,19 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	public boolean isParameterizable() {
 		return true;
+	}
+
+	public boolean isPrimitive() {
+		return false;
+	}
+
+	public String getSimpleName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getCanonicalName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

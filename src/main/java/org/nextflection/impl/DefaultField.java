@@ -18,7 +18,7 @@ public class DefaultField extends AbstractCallableMember implements Field {
 	}
 
 	private Type buildType(java.lang.reflect.Type langType) {
-		Type type = reflector.reflect(langType);
+		//Type type = reflector.reflect(langType);
 		// TODO: apply the value of the type variables of the class, if any
 		return type;
 	}

@@ -11,17 +11,15 @@ import org.nextflection.Method;
 import org.nextflection.ObjectType;
 import org.nextflection.TypeVariable;
 
-public class DefaultClassType extends AbstractElement implements ClassType {
+public class DefaultClassType extends AbstractType implements ClassType {
 
-	private final Class<?> clazz;
 	private final List<TypeVariable> typeParameters;
 	private final List<Method> methods;
 	private final List<Field> fields;
 	private final List<Constructor> constructors;
 
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
-		super(creator);
-		this.clazz = clazz;
+		super(clazz, creator);
 		this.typeParameters = Collections.unmodifiableList(this.createTypeParameters());
 		this.methods = Collections.unmodifiableList(this.createMethods());
 		this.fields = Collections.unmodifiableList(this.createFields());
@@ -34,8 +32,7 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 	 */
 	protected DefaultClassType(DefaultClassType original, List<TypeVariable> newTypeParameters, List<Method> newMethods, List<Field> newFields,
 			List<Constructor> newConstructors) {
-		super(original.reflector);
-		this.clazz = original.clazz;
+		super(original.clazz, original.reflector);
 		if (newTypeParameters != null) {
 			this.typeParameters = Collections.unmodifiableList(newTypeParameters);
 		} else {
@@ -129,5 +126,10 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 
 	public boolean isParameterizable() {
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return clazz.toString();
 	}
 }
