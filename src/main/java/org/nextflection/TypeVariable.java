@@ -6,7 +6,7 @@ public interface TypeVariable extends Type {
 
 	public String getName();
 
-	public GenericDeclaration getDeclaringElement();
+	public GenericDeclaration<?> getDeclaringElement();
 
 	public List<Type> getBounds();
 

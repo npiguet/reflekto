@@ -2,6 +2,7 @@ package org.nextflection.impl;
 
 import java.util.List;
 
+import org.nextflection.ClassType;
 import org.nextflection.Field;
 import org.nextflection.ObjectType;
 import org.nextflection.Reflector;
@@ -9,9 +10,8 @@ import org.nextflection.TypeVariable;
 
 public class DefaultField extends AbstractElement implements Field {
 
-	public DefaultField(Reflector reflector) {
+	public DefaultField(java.lang.reflect.Field f, ClassType declaringClass, FullReflector reflector) {
 		super(reflector);
-		// TODO Auto-generated constructor stub
 	}
 
 	public List<TypeVariable> getTypeParameters() {

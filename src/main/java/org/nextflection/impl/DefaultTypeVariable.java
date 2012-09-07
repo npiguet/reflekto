@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nextflection.GenericDeclaration;
-import org.nextflection.Reflector;
 import org.nextflection.Type;
 import org.nextflection.TypeVariable;
 
@@ -13,9 +12,9 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	private java.lang.reflect.TypeVariable<?> typeVariable;
 	private List<Type> bounds = new ArrayList<Type>();
-	private GenericDeclaration genericDeclaration;
+	private GenericDeclaration<?> genericDeclaration;
 
-	public DefaultTypeVariable(java.lang.reflect.TypeVariable<?> var, GenericDeclaration declaration, Reflector creator) {
+	public DefaultTypeVariable(java.lang.reflect.TypeVariable<?> var, GenericDeclaration<?> declaration, FullReflector creator) {
 		super(creator);
 		this.typeVariable = var;
 		this.genericDeclaration = declaration;
@@ -32,7 +31,7 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return typeVariable.getName();
 	}
 
-	public GenericDeclaration getDeclaringElement() {
+	public GenericDeclaration<?> getDeclaringElement() {
 		return genericDeclaration;
 	}
 

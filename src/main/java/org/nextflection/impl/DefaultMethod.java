@@ -2,14 +2,14 @@ package org.nextflection.impl;
 
 import java.util.List;
 
+import org.nextflection.ClassType;
 import org.nextflection.Method;
 import org.nextflection.ObjectType;
-import org.nextflection.Reflector;
 import org.nextflection.TypeVariable;
 
 public class DefaultMethod extends AbstractElement implements Method {
 
-	public DefaultMethod(Reflector reflector) {
+	public DefaultMethod(java.lang.reflect.Method m, ClassType declaringClass, FullReflector reflector) {
 		super(reflector);
 		// TODO Auto-generated constructor stub
 	}

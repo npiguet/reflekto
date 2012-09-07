@@ -1,10 +1,6 @@
 package org.nextflection;
 
 
-public interface Field extends Member, GenericDeclaration {
+public interface Field extends Member<Field>, GenericDeclaration<Field> {
 
-
-	public Field withTypeArgument(TypeVariable variable, ObjectType value);
-
-	public Field withErasure();
 }

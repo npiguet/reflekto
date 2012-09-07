@@ -9,4 +9,8 @@ public class Nextflection {
 	public static ObjectType reflect(Class<?> clazz){
 		return REFLECTOR.reflect(clazz);
 	}
+
+	public Type reflect(java.lang.reflect.Type type){
+		return REFLECTOR.reflect(type);
+	}
 }

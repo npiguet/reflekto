@@ -1,11 +1,10 @@
 package org.nextflection.impl;
 
-import org.nextflection.Reflector;
 
 public class AbstractElement {
-	protected Reflector reflector;
+	protected FullReflector reflector;
 
-	public AbstractElement(Reflector reflector) {
+	public AbstractElement(FullReflector reflector) {
 		this.reflector = reflector;
 	}
 }

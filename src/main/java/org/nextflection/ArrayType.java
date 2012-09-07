@@ -1,5 +1,5 @@
 package org.nextflection;
 
-public interface ArrayType extends ObjectType {
+public interface ArrayType extends ObjectType, Erasable<ArrayType> {
 
 }

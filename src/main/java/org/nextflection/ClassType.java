@@ -1,8 +1,5 @@
 package org.nextflection;
 
-public interface ClassType extends ObjectType, GenericDeclaration {
+public interface ClassType extends ObjectType, GenericDeclaration<ClassType>, Erasable<ClassType> {
 
-	public ClassType withTypeArgument(TypeVariable variable, ObjectType value);
-
-	public ClassType withErasure();
 }

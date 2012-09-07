@@ -20,49 +20,81 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 	private final List<Field> fields;
 	private final List<Constructor> constructors;
 
-	public DefaultClassType(Class<?> clazz, Reflector creator) {
+	public DefaultClassType(Class<?> clazz, FullReflector creator) {
 		super(creator);
 		this.clazz = clazz;
-		this.typeParameters = this.createTypeParameters();
-		this.methods = this.createMethods();
-		this.fields = this.createFields();
-		this.constructors = this.createConstructors();
+		this.typeParameters = Collections.unmodifiableList(this.createTypeParameters());
+		this.methods = Collections.unmodifiableList(this.createMethods());
+		this.fields = Collections.unmodifiableList(this.createFields());
+		this.constructors = Collections.unmodifiableList(this.createConstructors());
 	}
 
-	protected DefaultClassType(Class<?> clazz, List<TypeVariable> typeParameters, List<Method> methods, List<Field> fields, List<Constructor> constructors, Reflector creator){
-		super(creator);
-		this.clazz = clazz;
-		this.typeParameters = typeParameters;
-		this.methods = methods;
-		this.fields = fields;
-		this.constructors = constructors;
+	/** 
+	 * Builds a copy of the original DefaultClassType, replacing the list of type parameters, methods, constructors and fields iif the specified one is not null.
+	 */
+	protected DefaultClassType(DefaultClassType original, List<TypeVariable> newTypeParameters, List<Method> newMethods, List<Field> newFields, List<Constructor> newConstructors){
+		super(original.reflector);
+		this.clazz = original.clazz;
+		if(newTypeParameters != null){
+			this.typeParameters = Collections.unmodifiableList(newTypeParameters);
+		} else {
+			this.typeParameters = original.typeParameters;
+		}
+		if(newMethods != null){
+			this.methods = Collections.unmodifiableList(newMethods);	
+		} else {
+			this.methods = original.methods;
+		}
+		if(newFields != null) {
+			this.fields = Collections.unmodifiableList(newFields);
+		} else {
+			this.fields = original.fields;
+		}
+		if(newConstructors != null){
+			this.constructors = Collections.unmodifiableList(newConstructors);
+		} else {
+			this.constructors = original.constructors;
+		}
 	}
 
 	private List<TypeVariable> createTypeParameters() {
-		List<TypeVariable> params = new ArrayList<TypeVariable>(clazz.getTypeParameters().length);
-		for (java.lang.reflect.TypeVariable<? extends Class<?>> var : clazz.getTypeParameters()) {
+		java.lang.reflect.TypeVariable<? extends Class<?>>[] langParams = clazz.getTypeParameters();
+		List<TypeVariable> params = new ArrayList<TypeVariable>(langParams.length);
+		for (java.lang.reflect.TypeVariable<? extends Class<?>> var : langParams) {
 			params.add(reflector.reflect(var, this));
 		}
 		return params;
 	}
 	
 	private List<Constructor> createConstructors() {
-		// TODO: code it
-		return null;
+		java.lang.reflect.Constructor<?>[] langConstructors = clazz.getDeclaredConstructors(); 
+		List<Constructor> cons = new ArrayList<Constructor>(langConstructors.length);
+		for(java.lang.reflect.Constructor<?> c : langConstructors){
+			cons.add(reflector.reflect(c, this));
+		}
+		return cons;
 	}
 
 	private List<Field> createFields() {
-		// TODO: code it
-		return null;
+		java.lang.reflect.Field[] langFields = clazz.getDeclaredFields();
+		List<Field> flds = new ArrayList<Field>(langFields.length);
+		for(java.lang.reflect.Field f : langFields){
+			flds.add(reflector.reflect(f, this));
+		}
+		return flds;
 	}
 
 	private List<Method> createMethods() {
-		// TODO: code it
-		return null;
+		java.lang.reflect.Method[] langMethods = clazz.getDeclaredMethods();
+		List<Method> meths = new ArrayList<Method>(langMethods.length);
+		for(java.lang.reflect.Method m : langMethods){
+			meths.add(reflector.reflect(m, this));
+		}
+		return meths;
 	}
 
 	public List<TypeVariable> getTypeParameters() {
-		return Collections.unmodifiableList(typeParameters);
+		return typeParameters;
 	}
 
 	public ClassType withTypeArgument(TypeVariable variable, ObjectType value) {
@@ -71,8 +103,22 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 	}
 
 	public ClassType withErasure() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Field> newFields = new ArrayList<Field>(fields.size());
+		List<Constructor> newConstructors = new ArrayList<Constructor>(fields.size());
+		List<Method> newMethods = new ArrayList<Method>(methods.size());
+		List<TypeVariable> noTypeVariables = Collections.emptyList();
+		
+		for(Field f : fields){
+			newFields.add(f.withErasure());
+		}
+		for(Constructor c : constructors){
+			newConstructors.add(c.withErasure());
+		}
+		for(Method m : methods){
+			newMethods.add(m.withErasure());
+		}
+		
+		return reflector.buildCopy(this, noTypeVariables, newFields, newConstructors, newMethods);
 	}
 
 	public boolean isErasure() {
