@@ -1,5 +1,8 @@
 package org.nextflection;
 
-public interface Member<T extends Member> extends Erasable<T> {
+public interface Member extends Parameterizable {
 
+	public Member withErasure();
+
+	public Member withTypeArgument(TypeVariable variable, ObjectType value);
 }

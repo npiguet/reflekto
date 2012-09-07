@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.nextflection.ClassType;
 import org.nextflection.GenericDeclaration;
+import org.nextflection.ObjectType;
 import org.nextflection.Type;
 import org.nextflection.TypeVariable;
 
@@ -12,9 +14,9 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	private java.lang.reflect.TypeVariable<?> typeVariable;
 	private List<Type> bounds = new ArrayList<Type>();
-	private GenericDeclaration<?> genericDeclaration;
+	private GenericDeclaration genericDeclaration;
 
-	public DefaultTypeVariable(java.lang.reflect.TypeVariable<?> var, GenericDeclaration<?> declaration, FullReflector creator) {
+	public DefaultTypeVariable(java.lang.reflect.TypeVariable<?> var, GenericDeclaration declaration, FullReflector creator) {
 		super(creator);
 		this.typeVariable = var;
 		this.genericDeclaration = declaration;
@@ -31,7 +33,7 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return typeVariable.getName();
 	}
 
-	public GenericDeclaration<?> getDeclaringElement() {
+	public GenericDeclaration getDeclaringElement() {
 		return genericDeclaration;
 	}
 
@@ -41,5 +43,20 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	public Type getLeftmostBound() {
 		return bounds.get(0);
+	}
+
+	public ClassType withErasure() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public TypeVariable withTypeArgument(TypeVariable variable, ObjectType value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isErasure() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -25,7 +25,7 @@ public class DefaultReflector implements FullReflector {
 		return new DefaultClassType(clazz, this);
 	}
 
-	public TypeVariable reflect(java.lang.reflect.TypeVariable<?> var, GenericDeclaration<?> declaration) {
+	public TypeVariable reflect(java.lang.reflect.TypeVariable<?> var, GenericDeclaration declaration) {
 		return new DefaultTypeVariable(var, declaration, this);
 	}
 
@@ -41,7 +41,8 @@ public class DefaultReflector implements FullReflector {
 		return new DefaultMethod(m, declaringClass, this);
 	}
 
-	public ClassType buildCopy(ClassType original, List<TypeVariable> newTypeParameters, List<Field> newFields, List<Constructor> newConstructors, List<Method> newMethods) {
-		return new DefaultClassType((DefaultClassType)original, newTypeParameters, newMethods, newFields, newConstructors);
+	public ClassType buildCopy(ClassType original, List<TypeVariable> newTypeParameters, List<Field> newFields,
+			List<Constructor> newConstructors, List<Method> newMethods) {
+		return new DefaultClassType((DefaultClassType) original, newTypeParameters, newMethods, newFields, newConstructors);
 	}
 }

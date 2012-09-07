@@ -1,5 +1,5 @@
 package org.nextflection;
 
-public interface ClassType extends ObjectType, GenericDeclaration<ClassType>, Erasable<ClassType> {
+public interface ClassType extends ObjectType, GenericDeclaration {
 
 }

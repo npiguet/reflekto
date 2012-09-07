@@ -2,9 +2,11 @@ package org.nextflection;
 
 import java.util.List;
 
-public interface GenericDeclaration<T extends GenericDeclaration> {
+/**
+ * An element that can declare its own type variable.
+ */
+public interface GenericDeclaration extends Parameterizable {
 
 	public List<TypeVariable> getTypeParameters();
 
-	public T withTypeArgument(TypeVariable variable, ObjectType value);
 }

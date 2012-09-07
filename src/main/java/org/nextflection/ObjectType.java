@@ -1,5 +1,5 @@
 package org.nextflection;
 
-public interface ObjectType extends Type {
+public interface ObjectType extends Type, Parameterizable {
 
 }
