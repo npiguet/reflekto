@@ -5,14 +5,12 @@ import org.nextflection.Constructor;
 import org.nextflection.ObjectType;
 import org.nextflection.TypeVariable;
 
-public class DefaultConstructor extends AbstractElement implements Constructor {
+public class DefaultConstructor extends AbstractMember implements Constructor {
 
 	private final java.lang.reflect.Constructor<?> constructor;
-	private final ClassType declaringClass;
 
 	public DefaultConstructor(java.lang.reflect.Constructor<?> constructor, ClassType declaringClass, FullReflector reflector) {
-		super(reflector);
-		this.declaringClass = declaringClass;
+		super(declaringClass, reflector);
 		this.constructor = constructor;
 	}
 

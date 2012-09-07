@@ -5,13 +5,12 @@ import java.util.List;
 import org.nextflection.ClassType;
 import org.nextflection.Field;
 import org.nextflection.ObjectType;
-import org.nextflection.Reflector;
 import org.nextflection.TypeVariable;
 
-public class DefaultField extends AbstractElement implements Field {
+public class DefaultField extends AbstractCallableMember implements Field {
 
 	public DefaultField(java.lang.reflect.Field f, ClassType declaringClass, FullReflector reflector) {
-		super(reflector);
+		super(declaringClass, reflector);
 	}
 
 	public List<TypeVariable> getTypeParameters() {
