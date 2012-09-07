@@ -1,5 +1,5 @@
 package org.nextflection;
 
-public interface WildcardType extends Type, Parameterizable {
+public interface WildcardType extends Type {
 
 }

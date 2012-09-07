@@ -2,7 +2,7 @@ package org.nextflection;
 
 import java.util.List;
 
-public interface TypeVariable extends Type, Parameterizable {
+public interface TypeVariable extends Type {
 
 	public String getName();
 

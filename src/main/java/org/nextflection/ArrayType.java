@@ -1,6 +1,6 @@
 package org.nextflection;
 
-public interface ArrayType extends ObjectType, Parameterizable {
+public interface ArrayType extends ObjectType {
 
 	public ArrayType withErasure();
 

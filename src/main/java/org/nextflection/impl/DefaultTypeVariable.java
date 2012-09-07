@@ -59,4 +59,8 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public boolean isParameterizable() {
+		return true;
+	}
 }
