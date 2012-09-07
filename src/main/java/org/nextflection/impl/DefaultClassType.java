@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nextflection.ClassType;
-import org.nextflection.ConstructorMember;
-import org.nextflection.FieldMember;
-import org.nextflection.MethodMember;
+import org.nextflection.Constructor;
+import org.nextflection.Field;
+import org.nextflection.Method;
 import org.nextflection.ObjectType;
 import org.nextflection.Reflector;
 import org.nextflection.TypeVariable;
@@ -16,9 +16,9 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 
 	private final Class<?> clazz;
 	private final List<TypeVariable> typeParameters;
-	private final List<MethodMember> methods;
-	private final List<FieldMember> fields;
-	private final List<ConstructorMember> constructors;
+	private final List<Method> methods;
+	private final List<Field> fields;
+	private final List<Constructor> constructors;
 
 	public DefaultClassType(Class<?> clazz, Reflector creator) {
 		super(creator);
@@ -29,7 +29,7 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 		this.constructors = this.createConstructors();
 	}
 
-	protected DefaultClassType(Class<?> clazz, List<TypeVariable> typeParameters, List<MethodMember> methods, List<FieldMember> fields, List<ConstructorMember> constructors, Reflector creator){
+	protected DefaultClassType(Class<?> clazz, List<TypeVariable> typeParameters, List<Method> methods, List<Field> fields, List<Constructor> constructors, Reflector creator){
 		super(creator);
 		this.clazz = clazz;
 		this.typeParameters = typeParameters;
@@ -46,17 +46,17 @@ public class DefaultClassType extends AbstractElement implements ClassType {
 		return params;
 	}
 	
-	private List<ConstructorMember> createConstructors() {
+	private List<Constructor> createConstructors() {
 		// TODO: code it
 		return null;
 	}
 
-	private List<FieldMember> createFields() {
+	private List<Field> createFields() {
 		// TODO: code it
 		return null;
 	}
 
-	private List<MethodMember> createMethods() {
+	private List<Method> createMethods() {
 		// TODO: code it
 		return null;
 	}
