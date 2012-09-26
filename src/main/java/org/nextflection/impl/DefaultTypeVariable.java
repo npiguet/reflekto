@@ -77,4 +77,9 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

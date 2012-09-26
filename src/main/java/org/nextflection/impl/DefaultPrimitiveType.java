@@ -27,4 +27,9 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 	public String toString() {
 		return clazz.getName();
 	}
+
+	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

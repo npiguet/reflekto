@@ -1,5 +1,6 @@
 package org.nextflection.impl;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -131,5 +132,64 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	@Override
 	public String toString() {
 		return clazz.toString();
+	}
+
+	public String declarationString() {
+		// declaration
+		StringBuilder s = new StringBuilder();
+		if(this.isPublic()){
+			s.append("public ");
+		}
+		if(this.isAbstract()){
+			s.append("abstract ");
+		}
+		if(this.isFinal()){
+			s.append("final ");
+		}
+		if(this.isInterface()){
+			s.append("interface ");
+		}else {
+			s.append("class ");
+		}
+		s.append(this.getName());
+		
+		// extends
+		// TODO: use methods from the ClassType interface instead of Class
+		Class<?> superClass = clazz.getSuperclass();
+		if(superClass != null && superClass != Object.class){
+			s.append(" extends ");
+			s.append(superClass.getName());
+		}
+		
+		// implements
+		// TODO: use methods from the ClassType interface instead of Class
+		Class<?>[] ifaces = clazz.getInterfaces();
+		if(ifaces.length > 0){
+			s.append(" implements ");
+			for(int i = 0; i < ifaces.length; i ++){
+				if(i > 0){
+					s.append(", ");
+				}
+				s.append(ifaces[i].getName());
+			}
+		}
+		
+		return s.toString();
+	}
+
+	public boolean isPublic() {
+		return Modifier.isPublic(clazz.getModifiers());
+	}
+
+	public boolean isAbstract() {
+		return Modifier.isAbstract(clazz.getModifiers());
+	}
+
+	public boolean isFinal() {
+		return Modifier.isFinal(clazz.getModifiers());
+	}
+
+	public boolean isInterface() {
+		return clazz.isInterface();
 	}
 }

@@ -41,4 +41,9 @@ public class DefaultField extends AbstractCallableMember implements Field {
 		return null;
 	}
 
+	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

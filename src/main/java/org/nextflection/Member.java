@@ -7,4 +7,6 @@ public interface Member extends Parameterizable {
 	public Member withErasure();
 
 	public Member withTypeArgument(TypeVariable variable, ObjectType value);
+	
+	public String declarationString();
 }

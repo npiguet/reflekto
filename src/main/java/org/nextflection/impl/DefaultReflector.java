@@ -14,10 +14,25 @@ public class DefaultReflector implements FullReflector {
 
 	public Type reflect(Class<?> clazz) {
 		if (clazz.isPrimitive()) {
-			return new DefaultPrimitiveType(clazz, this);
+			return reflectPrimitive(clazz);
 		} else if (clazz.isArray()) {
-			return new DefaultArrayType(clazz, this);
+			return reflectArray(clazz);
 		}
+		return reflectClassOrInterface(clazz);
+	}
+	
+	protected Type reflectPrimitive(Class<?> clazz){
+		assert clazz.isPrimitive();
+		return new DefaultPrimitiveType(clazz, this);
+	}
+	
+	protected Type reflectArray(Class<?> clazz){
+		assert clazz.isArray();
+		return new DefaultArrayType(clazz, this);
+	}
+	
+	protected Type reflectClassOrInterface(Class<?> clazz){
+		assert !clazz.isPrimitive() && !clazz.isArray();
 		return new DefaultClassType(clazz, this);
 	}
 

@@ -14,4 +14,6 @@ public interface Type extends Parameterizable {
 	public String getSimpleName();
 
 	public String getCanonicalName();
+	
+	public String declarationString();
 }

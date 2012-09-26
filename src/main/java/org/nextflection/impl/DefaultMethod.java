@@ -34,4 +34,9 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		return null;
 	}
 
+	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

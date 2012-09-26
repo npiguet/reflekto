@@ -28,4 +28,9 @@ public class DefaultConstructor extends AbstractMember implements Constructor {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

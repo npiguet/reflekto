@@ -30,4 +30,9 @@ public class DefaultArrayType extends AbstractType {
 		return clazz.toString();
 	}
 
+	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

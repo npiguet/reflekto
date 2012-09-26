@@ -6,8 +6,6 @@ import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 import org.nextflection.Type;
 
-import sample.Animal;
-
 public class DefaultReflectorTest {
 
 	private DefaultReflector reflector = new DefaultReflector();
@@ -21,15 +19,15 @@ public class DefaultReflectorTest {
 
 	@Test
 	public void testReflectClass() {
-		Type t = reflector.reflect(Animal.class);
+		Type t = reflector.reflect(Object.class);
 		assertTrue(t instanceof DefaultClassType);
-		assertEquals("class sample.Animal", t.toString());
+		assertEquals("class java.lang.Object", t.toString());
 	}
 
 	@Test
 	public void testReflectArray() {
-		Type t = reflector.reflect(Animal[].class);
+		Type t = reflector.reflect(Object[].class);
 		assertTrue(t instanceof DefaultArrayType);
-		assertEquals("class [Lsample.Animal;", t.toString());
+		assertEquals("class [Ljava.lang.Object;", t.toString());
 	}
 }
