@@ -20,17 +20,17 @@ public class DefaultReflector implements FullReflector {
 		}
 		return reflectClassOrInterface(clazz);
 	}
-	
+
 	protected Type reflectPrimitive(Class<?> clazz){
 		assert clazz.isPrimitive();
 		return new DefaultPrimitiveType(clazz, this);
 	}
-	
+
 	protected Type reflectArray(Class<?> clazz){
 		assert clazz.isArray();
 		return new DefaultArrayType(clazz, this);
 	}
-	
+
 	protected Type reflectClassOrInterface(Class<?> clazz){
 		assert !clazz.isPrimitive() && !clazz.isArray();
 		return new DefaultClassType(clazz, this);
@@ -56,4 +56,11 @@ public class DefaultReflector implements FullReflector {
 			List<Constructor> newConstructors, List<Method> newMethods) {
 		return new DefaultClassType((DefaultClassType) original, newTypeParameters, newMethods, newFields, newConstructors);
 	}
+
+	//	public Type reflect(java.lang.reflect.Type type) {
+	//		if(type instanceof Class){
+	//			return reflect((Class<?>) type);
+	//		}
+	//		return null;
+	//	}
 }

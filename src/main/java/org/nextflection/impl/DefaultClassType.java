@@ -10,6 +10,7 @@ import org.nextflection.Constructor;
 import org.nextflection.Field;
 import org.nextflection.Method;
 import org.nextflection.ObjectType;
+import org.nextflection.TypeName;
 import org.nextflection.TypeVariable;
 
 public class DefaultClassType extends AbstractType implements ClassType {
@@ -151,8 +152,8 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		}else {
 			s.append("class ");
 		}
-		s.append(this.getName());
-		
+		s.append(this.getGenericName().full());
+
 		// extends
 		// TODO: use methods from the ClassType interface instead of Class
 		Class<?> superClass = clazz.getSuperclass();
@@ -160,7 +161,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			s.append(" extends ");
 			s.append(superClass.getName());
 		}
-		
+
 		// implements
 		// TODO: use methods from the ClassType interface instead of Class
 		Class<?>[] ifaces = clazz.getInterfaces();
@@ -173,7 +174,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 				s.append(ifaces[i].getName());
 			}
 		}
-		
+
 		return s.toString();
 	}
 
@@ -192,4 +193,60 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	public boolean isInterface() {
 		return clazz.isInterface();
 	}
+
+	public TypeName getGenericName() {
+		return new AbstractTypeName(){
+			public String full() {
+				return buildName(clazz.getName(), TypeName.Kind.FULL);
+			}
+
+			public String simple() {
+				return buildName(clazz.getSimpleName(), TypeName.Kind.SIMPLE);
+			}
+
+			public String canonical() {
+				return buildName(clazz.getCanonicalName(), TypeName.Kind.CANONICAL);
+			}
+
+			public String buildName(String className, TypeName.Kind kind){
+				if(typeParameters.isEmpty()){
+					return className;
+				}
+				StringBuilder s = new StringBuilder();
+				s.append(className);
+				s.append('<');
+				for(int i = 0; i < typeParameters.size(); i ++){
+					if(i > 0){
+						s.append(", ");
+					}
+					TypeVariable var = typeParameters.get(i);
+					s.append(var.getGenericName().get(kind));
+				}
+				s.append('>');
+				return s.toString();
+			}
+		};
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * clazz.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultClassType other = (DefaultClassType) obj;
+		return this.clazz.equals(other.clazz);
+	}
+
+
 }

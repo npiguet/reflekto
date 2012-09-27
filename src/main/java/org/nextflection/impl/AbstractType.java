@@ -1,6 +1,7 @@
 package org.nextflection.impl;
 
 import org.nextflection.Type;
+import org.nextflection.TypeName;
 
 public abstract class AbstractType extends AbstractElement implements Type {
 
@@ -11,16 +12,25 @@ public abstract class AbstractType extends AbstractElement implements Type {
 		this.clazz = clazz;
 	}
 
-	public String getName() {
-		return clazz.getName();
+	public String getName(){
+		return getGenericName().full();
 	}
 
-	public String getSimpleName() {
-		return clazz.getSimpleName();
-	}
+	public TypeName getRawName() {
+		return new AbstractTypeName(){
 
-	public String getCanonicalName() {
-		return clazz.getCanonicalName();
+			public String full() {
+				return clazz.getName();
+			}
+
+			public String simple() {
+				return clazz.getSimpleName();
+			}
+
+			public String canonical() {
+				return clazz.getCanonicalName();
+			}
+		};
 	}
 
 	public boolean isPrimitive() {

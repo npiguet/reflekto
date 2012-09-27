@@ -2,6 +2,7 @@ package org.nextflection.impl;
 
 import org.nextflection.ObjectType;
 import org.nextflection.Type;
+import org.nextflection.TypeName;
 import org.nextflection.TypeVariable;
 
 public class DefaultArrayType extends AbstractType {
@@ -31,6 +32,16 @@ public class DefaultArrayType extends AbstractType {
 	}
 
 	public String declarationString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public TypeName getRawName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public TypeName getGenericName() {
 		// TODO Auto-generated method stub
 		return null;
 	}

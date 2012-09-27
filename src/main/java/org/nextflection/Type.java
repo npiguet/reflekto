@@ -10,10 +10,10 @@ public interface Type extends Parameterizable {
 	public boolean isPrimitive();
 
 	public String getName();
-
-	public String getSimpleName();
-
-	public String getCanonicalName();
+	
+	public TypeName getRawName();
+	
+	public TypeName getGenericName();
 	
 	public String declarationString();
 }
