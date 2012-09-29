@@ -1,8 +1,10 @@
 package org.nextflection;
 
+import java.util.List;
+
 public interface ArrayType extends ObjectType {
 
 	public ArrayType withErasure();
 
-	public ArrayType withTypeArgument(TypeVariable variable, ObjectType value);
+	public ArrayType withTypeArguments(List<TypeVariable> variable, List<Type> value);
 }

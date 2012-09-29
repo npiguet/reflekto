@@ -9,23 +9,43 @@ import org.nextflection.ClassType;
 import org.nextflection.Constructor;
 import org.nextflection.Field;
 import org.nextflection.Method;
-import org.nextflection.ObjectType;
+import org.nextflection.Type;
 import org.nextflection.TypeName;
 import org.nextflection.TypeVariable;
 
 public class DefaultClassType extends AbstractType implements ClassType {
 
-	private final List<TypeVariable> typeParameters;
-	private final List<Method> methods;
-	private final List<Field> fields;
-	private final List<Constructor> constructors;
+	private final ReadOnlyReference<List<TypeVariable>> typeParameters;
+	private final ReadOnlyReference<List<Method>> methods;
+	private final ReadOnlyReference<List<Field>> fields;
+	private final ReadOnlyReference<List<Constructor>> constructors;
 
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
 		super(clazz, creator);
-		this.typeParameters = Collections.unmodifiableList(this.createTypeParameters());
-		this.methods = Collections.unmodifiableList(this.createMethods());
-		this.fields = Collections.unmodifiableList(this.createFields());
-		this.constructors = Collections.unmodifiableList(this.createConstructors());
+		this.typeParameters = new LazyInit<List<TypeVariable>>(){
+			@Override
+			protected List<TypeVariable> init() {
+				return initTypeParameters();
+			}
+		};
+		this.methods = new LazyInit<List<Method>>(){
+			@Override
+			protected List<Method> init() {
+				return initMethods();
+			}
+		};
+		this.fields = new LazyInit<List<Field>>(){
+			@Override
+			protected List<Field> init() {
+				return initFields();
+			}
+		};
+		this.constructors = new LazyInit<List<Constructor>>(){
+			@Override
+			protected List<Constructor> init() {
+				return initConstructors();
+			}
+		};
 	}
 
 	/**
@@ -35,90 +55,100 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	protected DefaultClassType(DefaultClassType original, List<TypeVariable> newTypeParameters, List<Method> newMethods, List<Field> newFields,
 			List<Constructor> newConstructors) {
 		super(original.clazz, original.reflector);
-		if (newTypeParameters != null) {
-			this.typeParameters = Collections.unmodifiableList(newTypeParameters);
-		} else {
-			this.typeParameters = original.typeParameters;
-		}
-		if (newMethods != null) {
-			this.methods = Collections.unmodifiableList(newMethods);
-		} else {
-			this.methods = original.methods;
-		}
-		if (newFields != null) {
-			this.fields = Collections.unmodifiableList(newFields);
-		} else {
-			this.fields = original.fields;
-		}
-		if (newConstructors != null) {
-			this.constructors = Collections.unmodifiableList(newConstructors);
-		} else {
-			this.constructors = original.constructors;
-		}
+		//		if (newTypeParameters != null) {
+		//			this.typeParameters = Collections.unmodifiableList(newTypeParameters);
+		//		} else {
+		//			this.typeParameters = original.typeParameters;
+		//		}
+		//		if (newMethods != null) {
+		//			this.methods = Collections.unmodifiableList(newMethods);
+		//		} else {
+		//			this.methods = original.methods;
+		//		}
+		//		if (newFields != null) {
+		//			this.fields = Collections.unmodifiableList(newFields);
+		//		} else {
+		//			this.fields = original.fields;
+		//		}
+		//		if (newConstructors != null) {
+		//			this.constructors = Collections.unmodifiableList(newConstructors);
+		//		} else {
+		//			this.constructors = original.constructors;
+		//		}
+		this.typeParameters = null;
+		this.methods = null;
+		this.fields = null;
+		this.constructors = null;
 	}
 
-	private List<TypeVariable> createTypeParameters() {
+	private List<TypeVariable> initTypeParameters() {
 		java.lang.reflect.TypeVariable<? extends Class<?>>[] langParams = clazz.getTypeParameters();
 		List<TypeVariable> params = new ArrayList<TypeVariable>(langParams.length);
 		for (java.lang.reflect.TypeVariable<? extends Class<?>> var : langParams) {
-			params.add(reflector.reflect(var, this));
+			params.add(reflector.reflect(var));
 		}
-		return params;
+		return Collections.unmodifiableList(params);
 	}
 
-	private List<Constructor> createConstructors() {
+	private List<Constructor> initConstructors() {
 		java.lang.reflect.Constructor<?>[] langConstructors = clazz.getDeclaredConstructors();
 		List<Constructor> cons = new ArrayList<Constructor>(langConstructors.length);
 		for (java.lang.reflect.Constructor<?> c : langConstructors) {
 			cons.add(reflector.reflect(c, this));
 		}
-		return cons;
+		return Collections.unmodifiableList(cons);
 	}
 
-	private List<Field> createFields() {
+	private List<Field> initFields() {
 		java.lang.reflect.Field[] langFields = clazz.getDeclaredFields();
 		List<Field> flds = new ArrayList<Field>(langFields.length);
 		for (java.lang.reflect.Field f : langFields) {
 			flds.add(reflector.reflect(f, this));
 		}
-		return flds;
+		return Collections.unmodifiableList(flds);
 	}
 
-	private List<Method> createMethods() {
+	private List<Method> initMethods() {
 		java.lang.reflect.Method[] langMethods = clazz.getDeclaredMethods();
 		List<Method> meths = new ArrayList<Method>(langMethods.length);
 		for (java.lang.reflect.Method m : langMethods) {
 			meths.add(reflector.reflect(m, this));
 		}
-		return meths;
+		return Collections.unmodifiableList(meths);
 	}
 
 	public List<TypeVariable> getTypeParameters() {
-		return typeParameters;
+		return typeParameters.get();
 	}
 
-	public ClassType withTypeArgument(TypeVariable variable, ObjectType value) {
+	public ClassType withTypeArguments(List<TypeVariable> variables, List<Type> values){
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ClassType withTypeArguments(List<Type> values) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ClassType withErasure() {
-		List<Field> newFields = new ArrayList<Field>(fields.size());
-		List<Constructor> newConstructors = new ArrayList<Constructor>(fields.size());
-		List<Method> newMethods = new ArrayList<Method>(methods.size());
-		List<TypeVariable> noTypeVariables = Collections.emptyList();
-
-		for (Field f : fields) {
-			newFields.add(f.withErasure());
-		}
-		for (Constructor c : constructors) {
-			newConstructors.add(c.withErasure());
-		}
-		for (Method m : methods) {
-			newMethods.add(m.withErasure());
-		}
-
-		return reflector.buildCopy(this, noTypeVariables, newFields, newConstructors, newMethods);
+		//		List<Field> newFields = new ArrayList<Field>(fields.size());
+		//		List<Constructor> newConstructors = new ArrayList<Constructor>(fields.size());
+		//		List<Method> newMethods = new ArrayList<Method>(methods.size());
+		//		List<TypeVariable> noTypeVariables = Collections.emptyList();
+		//
+		//		for (Field f : fields) {
+		//			newFields.add(f.withErasure());
+		//		}
+		//		for (Constructor c : constructors) {
+		//			newConstructors.add(c.withErasure());
+		//		}
+		//		for (Method m : methods) {
+		//			newMethods.add(m.withErasure());
+		//		}
+		//
+		//		return reflector.buildCopy(this, noTypeVariables, newFields, newConstructors, newMethods);
+		return null;
 	}
 
 	public boolean isErasure() {
@@ -209,17 +239,17 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			}
 
 			public String buildName(String className, TypeName.Kind kind){
-				if(typeParameters.isEmpty()){
+				if(typeParameters.get().isEmpty()){
 					return className;
 				}
 				StringBuilder s = new StringBuilder();
 				s.append(className);
 				s.append('<');
-				for(int i = 0; i < typeParameters.size(); i ++){
+				for(int i = 0; i < typeParameters.get().size(); i ++){
 					if(i > 0){
 						s.append(", ");
 					}
-					TypeVariable var = typeParameters.get(i);
+					TypeVariable var = typeParameters.get().get(i);
 					s.append(var.getGenericName().get(kind));
 				}
 				s.append('>');
@@ -247,6 +277,4 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		DefaultClassType other = (DefaultClassType) obj;
 		return this.clazz.equals(other.clazz);
 	}
-
-
 }

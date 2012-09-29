@@ -1,26 +1,20 @@
 package org.nextflection.impl;
 
+import java.util.List;
+
 import org.nextflection.ClassType;
 import org.nextflection.Field;
-import org.nextflection.ObjectType;
 import org.nextflection.Type;
 import org.nextflection.TypeVariable;
 
 public class DefaultField extends AbstractCallableMember implements Field {
 
 	private final java.lang.reflect.Field field;
-	private final Type type;
+	private Type type;
 
 	public DefaultField(java.lang.reflect.Field field, ClassType declaringClass, FullReflector reflector) {
 		super(declaringClass, reflector);
 		this.field = field;
-		this.type = buildType(field.getType());
-	}
-
-	private Type buildType(java.lang.reflect.Type langType) {
-		//Type type = reflector.reflect(langType);
-		// TODO: apply the value of the type variables of the class, if any
-		return type;
 	}
 
 	public String getName() {
@@ -31,7 +25,7 @@ public class DefaultField extends AbstractCallableMember implements Field {
 		return type.isErasure();
 	}
 
-	public Field withTypeArgument(TypeVariable variable, ObjectType value) {
+	public Field withTypeArguments(List<TypeVariable> variable, List<Type> value){
 		// TODO Auto-generated method stub
 		return null;
 	}

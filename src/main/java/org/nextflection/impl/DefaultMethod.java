@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.nextflection.ClassType;
 import org.nextflection.Method;
-import org.nextflection.ObjectType;
+import org.nextflection.Type;
 import org.nextflection.TypeVariable;
 
 public class DefaultMethod extends AbstractCallableMember implements Method {
@@ -24,7 +24,12 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		return false;
 	}
 
-	public Method withTypeArgument(TypeVariable variable, ObjectType value) {
+	public Method withTypeArguments(List<TypeVariable> variable, List<Type> value){
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Method withTypeArguments(List<Type> values) {
 		// TODO Auto-generated method stub
 		return null;
 	}

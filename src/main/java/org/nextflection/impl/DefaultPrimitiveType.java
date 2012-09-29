@@ -1,6 +1,7 @@
 package org.nextflection.impl;
 
-import org.nextflection.ObjectType;
+import java.util.List;
+
 import org.nextflection.PrimitiveType;
 import org.nextflection.Type;
 import org.nextflection.TypeName;
@@ -20,7 +21,7 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 		return true;
 	}
 
-	public Type withTypeArgument(TypeVariable variable, ObjectType value) {
+	public Type withTypeArguments(List<TypeVariable> variable, List<Type> value){
 		throw new UnsupportedOperationException("Not applicable to PrimitiveType");
 	}
 
@@ -34,6 +35,7 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 		return null;
 	}
 
+	@Override
 	public TypeName getRawName() {
 		// TODO Auto-generated method stub
 		return null;

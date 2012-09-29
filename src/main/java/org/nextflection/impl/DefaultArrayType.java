@@ -1,6 +1,7 @@
 package org.nextflection.impl;
 
-import org.nextflection.ObjectType;
+import java.util.List;
+
 import org.nextflection.Type;
 import org.nextflection.TypeName;
 import org.nextflection.TypeVariable;
@@ -21,11 +22,6 @@ public class DefaultArrayType extends AbstractType {
 		return false;
 	}
 
-	public Type withTypeArgument(TypeVariable variable, ObjectType value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public String toString() {
 		return clazz.toString();
@@ -36,12 +32,19 @@ public class DefaultArrayType extends AbstractType {
 		return null;
 	}
 
+	@Override
 	public TypeName getRawName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public TypeName getGenericName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Type withTypeArguments(List<TypeVariable> variables,
+			List<Type> values) {
 		// TODO Auto-generated method stub
 		return null;
 	}

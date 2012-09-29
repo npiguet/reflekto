@@ -14,5 +14,5 @@ public interface TypeVariable extends Type {
 
 	public ClassType withErasure();
 
-	public TypeVariable withTypeArgument(TypeVariable variable, ObjectType value);
+	public TypeVariable withTypeArguments(List<TypeVariable> variable, List<Type> value);
 }

@@ -3,20 +3,24 @@ package org.nextflection.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.nextflection.ClassType;
 import org.nextflection.GenericDeclaration;
-import org.nextflection.ObjectType;
 import org.nextflection.Type;
 import org.nextflection.TypeName;
 import org.nextflection.TypeVariable;
 
 public class DefaultTypeVariable extends AbstractElement implements TypeVariable {
 
-	private java.lang.reflect.TypeVariable<?> typeVariable;
-	private AtomicReference<List<Type>> bounds = new AtomicReference<List<Type>>();
-	private GenericDeclaration genericDeclaration;
+	private final java.lang.reflect.TypeVariable<?> typeVariable;
+	private final GenericDeclaration genericDeclaration;
+
+	private final LazyInit<List<Type>> bounds = new LazyInit<List<Type>>(){
+		@Override
+		protected List<Type> init() {
+			return initBounds();
+		}
+	};
 
 	public DefaultTypeVariable(java.lang.reflect.TypeVariable<?> var, GenericDeclaration declaration, FullReflector creator) {
 		super(creator);
@@ -32,29 +36,16 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return genericDeclaration;
 	}
 
-	public List<Type> getBounds() {
-		if(bounds.get() == null){
-			// build the bounds lazily so as not to actively build a giant tree of types
-			List<Type> types = new ArrayList<Type>();
-			for (java.lang.reflect.Type t : typeVariable.getBounds()) {
-				if(t instanceof Class){
-					types.add(reflector.reflect((Class<?>)t));
-				} else if (t instanceof java.lang.reflect.TypeVariable){
-					// TODO
-				} else if (t instanceof java.lang.reflect.ParameterizedType){
-					// TODO: this is a bit fucked up currently, but should basically be
-					// reflector.reflect((java.lang.reflect.ParameterizedType)t);
-				} else if (t instanceof java.lang.reflect.GenericArrayType){
-					// TODO
-				} else {
-					throw new IllegalStateException("Bounds " + t + " of type " + t.getClass().getName() + " are not supported");
-				}
-			}
-
-			// if two threads entered here, make sure that only one gets to set the value
-			bounds.compareAndSet(null, types);
+	protected List<Type> initBounds(){
+		List<Type> types = new ArrayList<Type>(typeVariable.getBounds().length);
+		for (java.lang.reflect.Type t : typeVariable.getBounds()) {
+			types.add(reflector.reflect(t));
 		}
-		return Collections.unmodifiableList(bounds.get());
+		return Collections.unmodifiableList(types);
+	}
+
+	public List<Type> getBounds() {
+		return bounds.get();
 	}
 
 	public Type getLeftmostBound() {
@@ -66,7 +57,7 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return null;
 	}
 
-	public TypeVariable withTypeArgument(TypeVariable variable, ObjectType value) {
+	public TypeVariable withTypeArguments(List<TypeVariable> variable, List<Type> value){
 		// TODO Auto-generated method stub
 		return null;
 	}

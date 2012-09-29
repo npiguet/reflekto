@@ -1,8 +1,10 @@
 package org.nextflection.impl;
 
+import java.util.List;
+
 import org.nextflection.ClassType;
 import org.nextflection.Constructor;
-import org.nextflection.ObjectType;
+import org.nextflection.Type;
 import org.nextflection.TypeVariable;
 
 public class DefaultConstructor extends AbstractMember implements Constructor {
@@ -24,7 +26,7 @@ public class DefaultConstructor extends AbstractMember implements Constructor {
 		return false;
 	}
 
-	public Constructor withTypeArgument(TypeVariable variable, ObjectType value) {
+	public Constructor withTypeArguments(List<TypeVariable> variable, List<Type> value){
 		// TODO Auto-generated method stub
 		return null;
 	}
