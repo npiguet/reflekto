@@ -15,70 +15,60 @@ import org.nextflection.TypeVariable;
 
 public class DefaultClassType extends AbstractType implements ClassType {
 
-	private final ReadOnlyReference<List<TypeVariable>> typeParameters;
-	private final ReadOnlyReference<List<Method>> methods;
-	private final ReadOnlyReference<List<Field>> fields;
-	private final ReadOnlyReference<List<Constructor>> constructors;
+	private final ReadOnlyReference<List<Type>> actualTypeParameters;
+	private final ReadOnlyReference<List<TypeVariable>> declaredTypeParameters = new LazyInit<List<TypeVariable>>(){
+		@Override
+		protected List<TypeVariable> init() {
+			return initTypeParameters();
+		}
+	};
+	private final ReadOnlyReference<List<Method>> methods = new LazyInit<List<Method>>(){
+		@Override
+		protected List<Method> init() {
+			return initMethods();
+		}
+	};
+	private final ReadOnlyReference<List<Field>> fields = new LazyInit<List<Field>>(){
+		@Override
+		protected List<Field> init() {
+			return initFields();
+		}
+	};
+	private final ReadOnlyReference<List<Constructor>> constructors = new LazyInit<List<Constructor>>(){
+		@Override
+		protected List<Constructor> init() {
+			return initConstructors();
+		}
+	};
+	private final ReadOnlyReference<ClassType> superClass = new LazyInit<ClassType>(){
+		@Override
+		protected ClassType init() {
+			return initSuperClass();
+		}
+	};
+	private final ReadOnlyReference<List<ClassType>> interfaces = new LazyInit<List<ClassType>>(){
+		@Override
+		protected List<ClassType> init() {
+			return initInterfaces();
+		}
+	};
 
+	@SuppressWarnings("unchecked")
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
 		super(clazz, creator);
-		this.typeParameters = new LazyInit<List<TypeVariable>>(){
-			@Override
-			protected List<TypeVariable> init() {
-				return initTypeParameters();
-			}
-		};
-		this.methods = new LazyInit<List<Method>>(){
-			@Override
-			protected List<Method> init() {
-				return initMethods();
-			}
-		};
-		this.fields = new LazyInit<List<Field>>(){
-			@Override
-			protected List<Field> init() {
-				return initFields();
-			}
-		};
-		this.constructors = new LazyInit<List<Constructor>>(){
-			@Override
-			protected List<Constructor> init() {
-				return initConstructors();
-			}
-		};
+		// Yes, I know this is ugly, but since all of the involved objects are effectively final,
+		// it is effectively safe, and makes my life easier than carrying around two levels of wildcard types.
+		this.actualTypeParameters = (ReadOnlyReference<List<Type>>)(Object)this.declaredTypeParameters;
 	}
 
 	/**
 	 * Builds a copy of the original DefaultClassType, replacing the list of type parameters, methods, constructors and fields iif the specified
 	 * one is not null.
 	 */
-	protected DefaultClassType(DefaultClassType original, List<TypeVariable> newTypeParameters, List<Method> newMethods, List<Field> newFields,
-			List<Constructor> newConstructors) {
+	protected DefaultClassType(DefaultClassType original, List<Type> actualTypeParameters) {
 		super(original.clazz, original.reflector);
-		//		if (newTypeParameters != null) {
-		//			this.typeParameters = Collections.unmodifiableList(newTypeParameters);
-		//		} else {
-		//			this.typeParameters = original.typeParameters;
-		//		}
-		//		if (newMethods != null) {
-		//			this.methods = Collections.unmodifiableList(newMethods);
-		//		} else {
-		//			this.methods = original.methods;
-		//		}
-		//		if (newFields != null) {
-		//			this.fields = Collections.unmodifiableList(newFields);
-		//		} else {
-		//			this.fields = original.fields;
-		//		}
-		//		if (newConstructors != null) {
-		//			this.constructors = Collections.unmodifiableList(newConstructors);
-		//		} else {
-		//			this.constructors = original.constructors;
-		//		}
-		this.typeParameters = null;
-		this.methods = null;
-		this.fields = null;
-		this.constructors = null;
+		List<Type> unmodifiable = Collections.unmodifiableList(new ArrayList<Type>(actualTypeParameters));
+		this.actualTypeParameters = new FinalReference<List<Type>>(unmodifiable);
 	}
 
 	private List<TypeVariable> initTypeParameters() {
@@ -91,6 +81,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	private List<Constructor> initConstructors() {
+		// TODO: replace the type variables by their values if necessary
 		java.lang.reflect.Constructor<?>[] langConstructors = clazz.getDeclaredConstructors();
 		List<Constructor> cons = new ArrayList<Constructor>(langConstructors.length);
 		for (java.lang.reflect.Constructor<?> c : langConstructors) {
@@ -100,6 +91,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	private List<Field> initFields() {
+		// TODO: replace the type variables by their values if necessary
 		java.lang.reflect.Field[] langFields = clazz.getDeclaredFields();
 		List<Field> flds = new ArrayList<Field>(langFields.length);
 		for (java.lang.reflect.Field f : langFields) {
@@ -109,6 +101,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	private List<Method> initMethods() {
+		// TODO: replace the type variables by their values if necessary
 		java.lang.reflect.Method[] langMethods = clazz.getDeclaredMethods();
 		List<Method> meths = new ArrayList<Method>(langMethods.length);
 		for (java.lang.reflect.Method m : langMethods) {
@@ -117,8 +110,23 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return Collections.unmodifiableList(meths);
 	}
 
+	private ClassType initSuperClass(){
+		// TODO: replace the type variables by their values if necessary
+		return (ClassType)reflector.reflect(clazz.getGenericSuperclass());
+	}
+
+	private List<ClassType> initInterfaces(){
+		// TODO: replace the type variables by their values if necessary
+		java.lang.reflect.Type[] ifaces = clazz.getGenericInterfaces();
+		List<ClassType> types = new ArrayList<ClassType>(ifaces.length);
+		for(java.lang.reflect.Type iface : ifaces){
+			types.add((ClassType)reflector.reflect(iface));
+		}
+		return Collections.unmodifiableList(types);
+	}
+
 	public List<TypeVariable> getTypeParameters() {
-		return typeParameters.get();
+		return declaredTypeParameters.get();
 	}
 
 	public ClassType withTypeArguments(List<TypeVariable> variables, List<Type> values){
@@ -127,27 +135,11 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public ClassType withTypeArguments(List<Type> values) {
-		// TODO Auto-generated method stub
-		return null;
+		return reflector.withTypeArguments(this, values);
 	}
 
 	public ClassType withErasure() {
-		//		List<Field> newFields = new ArrayList<Field>(fields.size());
-		//		List<Constructor> newConstructors = new ArrayList<Constructor>(fields.size());
-		//		List<Method> newMethods = new ArrayList<Method>(methods.size());
-		//		List<TypeVariable> noTypeVariables = Collections.emptyList();
-		//
-		//		for (Field f : fields) {
-		//			newFields.add(f.withErasure());
-		//		}
-		//		for (Constructor c : constructors) {
-		//			newConstructors.add(c.withErasure());
-		//		}
-		//		for (Method m : methods) {
-		//			newMethods.add(m.withErasure());
-		//		}
-		//
-		//		return reflector.buildCopy(this, noTypeVariables, newFields, newConstructors, newMethods);
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -158,6 +150,12 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	public boolean isParameterizable() {
 		return true;
+	}
+
+	public boolean isGenericInvocation(){
+		// the cast to object is ugly, but it is due to another ugly cast when
+		// initializing actualTypeParameters. It still works as expected.
+		return (Object)this.declaredTypeParameters != this.actualTypeParameters;
 	}
 
 	@Override
@@ -179,29 +177,29 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		}
 		if(this.isInterface()){
 			s.append("interface ");
-		}else {
+		} else if (this.isEnum()) {
+			s.append("enum ");
+		} else {
 			s.append("class ");
 		}
 		s.append(this.getGenericName().full());
 
 		// extends
-		// TODO: use methods from the ClassType interface instead of Class
-		Class<?> superClass = clazz.getSuperclass();
-		if(superClass != null && superClass != Object.class){
+		ClassType superClazz = superClass.get();
+		if(superClazz != null && !superClazz.getName().equals("java.lang.Object") && !this.isEnum()){
 			s.append(" extends ");
-			s.append(superClass.getName());
+			s.append(superClazz.getName());
 		}
 
 		// implements
-		// TODO: use methods from the ClassType interface instead of Class
-		Class<?>[] ifaces = clazz.getInterfaces();
-		if(ifaces.length > 0){
+		List<ClassType> ifaces = interfaces.get();
+		if(ifaces.size() > 0){
 			s.append(" implements ");
-			for(int i = 0; i < ifaces.length; i ++){
+			for(int i = 0; i < ifaces.size(); i ++){
 				if(i > 0){
 					s.append(", ");
 				}
-				s.append(ifaces[i].getName());
+				s.append(ifaces.get(i).getName());
 			}
 		}
 
@@ -224,6 +222,10 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return clazz.isInterface();
 	}
 
+	public boolean isEnum(){
+		return clazz.isEnum();
+	}
+
 	public TypeName getGenericName() {
 		return new AbstractTypeName(){
 			public String full() {
@@ -239,18 +241,22 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			}
 
 			public String buildName(String className, TypeName.Kind kind){
-				if(typeParameters.get().isEmpty()){
+				if(actualTypeParameters.get().isEmpty()){
 					return className;
 				}
 				StringBuilder s = new StringBuilder();
 				s.append(className);
 				s.append('<');
-				for(int i = 0; i < typeParameters.get().size(); i ++){
+				for(int i = 0; i < actualTypeParameters.get().size(); i ++){
 					if(i > 0){
 						s.append(", ");
 					}
-					TypeVariable var = typeParameters.get().get(i);
-					s.append(var.getGenericName().get(kind));
+					Type var = actualTypeParameters.get().get(i);
+					if(isGenericInvocation() && var instanceof TypeVariable){
+						s.append(var.getGenericName().simple());
+					} else {
+						s.append(var.getGenericName().get(kind));
+					}
 				}
 				s.append('>');
 				return s.toString();

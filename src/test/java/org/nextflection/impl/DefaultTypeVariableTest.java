@@ -24,7 +24,10 @@ public class DefaultTypeVariableTest {
 				"D extends java.lang.reflect.GenericDeclaration");
 
 		// parameterized bound
-		assertGenericName(EnumSet.class, 0, "E extends Enum<E>", "E", "E extends Enum<E>");
+		assertGenericName(EnumSet.class, 0, "E extends java.lang.Enum<E>", "E", "E extends java.lang.Enum<E>");
+
+		// recursive bound
+		assertGenericName(Enum.class, 0, "E extends java.lang.Enum<E>", "E", "E extends java.lang.Enum<E>");
 
 		// multiple bound
 		// TODO

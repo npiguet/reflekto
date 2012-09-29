@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.nextflection.TypeName;
@@ -54,7 +56,22 @@ public class DefaultClassTypeTest {
 				"public class java.util.ArrayList<E> " + //
 				"extends java.util.AbstractList<E> " + //
 				"implements java.util.List<E>, java.util.RandomAccess, java.lang.Cloneable, java.io.Serializable");
-		// TODO: enums
+		// Class declaring bounds that depend on itself
+		assertDeclarationString(Enum.class, //
+				"public abstract class java.lang.Enum<E extends java.lang.Enum<E>> " +
+				"implements java.lang.Comparable<E>, java.io.Serializable");
+		// Class declaring multiple type arguments
+		assertDeclarationString(HashMap.class, //
+				"public class java.util.HashMap<K, V> " + //
+				"extends java.util.AbstractMap<K, V> " + //
+				"implements java.util.Map<K, V>, java.lang.Cloneable, java.io.Serializable");
+		// Enum parent class
+		assertDeclarationString(TimeUnit.class, //
+				"public abstract enum java.util.concurrent.TimeUnit");
+		// Enum constant
+		assertDeclarationString(TimeUnit.SECONDS.getClass(), //
+				"class java.util.concurrent.TimeUnit$4 " +
+				"extends java.util.concurrent.TimeUnit");
 		// TODO: static inner class
 	}
 

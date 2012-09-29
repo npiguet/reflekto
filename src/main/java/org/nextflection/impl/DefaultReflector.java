@@ -37,7 +37,9 @@ public class DefaultReflector implements FullReflector {
 	};
 
 	public Type reflect(java.lang.reflect.Type type) {
-		if(type instanceof Class){
+		if(type == null){
+			return null;
+		} else if (type instanceof Class){
 			return reflect((Class<?>) type);
 		} else if (type instanceof java.lang.reflect.GenericArrayType){
 			// TODO
@@ -114,11 +116,9 @@ public class DefaultReflector implements FullReflector {
 		return new DefaultMethod(m, declaringClass, this);
 	}
 
-	public ClassType buildCopy(ClassType original, List<TypeVariable> newTypeParameters, List<Field> newFields,
-			List<Constructor> newConstructors, List<Method> newMethods) {
-		return new DefaultClassType((DefaultClassType) original, newTypeParameters, newMethods, newFields, newConstructors);
+	public ClassType withTypeArguments(ClassType original, List<Type> actualTypeParameters) {
+		return new DefaultClassType((DefaultClassType) original, actualTypeParameters);
 	}
-
 
 	public void clearTypeCache(){
 		this.typeCache.clear();

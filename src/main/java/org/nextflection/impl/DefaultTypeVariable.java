@@ -14,7 +14,6 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	private final java.lang.reflect.TypeVariable<?> typeVariable;
 	private final GenericDeclaration genericDeclaration;
-
 	private final LazyInit<List<Type>> bounds = new LazyInit<List<Type>>(){
 		@Override
 		protected List<Type> init() {

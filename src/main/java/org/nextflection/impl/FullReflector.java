@@ -24,8 +24,7 @@ public interface FullReflector extends Reflector {
 
 	public Method reflect(java.lang.reflect.Method m, ClassType declaringClass);
 
-	public ClassType buildCopy(ClassType original, List<TypeVariable> parameters, List<Field> newFields, List<Constructor> newConstructors,
-			List<Method> newMethods);
+	public ClassType withTypeArguments(ClassType original, List<Type> actualTypeArguments);
 
 	public void clearTypeCache();
 }
