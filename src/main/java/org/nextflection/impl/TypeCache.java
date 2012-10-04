@@ -4,12 +4,13 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nextflection.Type;
-import org.nextflection.TypeVariable;
+import org.nextflection.WildcardType;
 
 public abstract class TypeCache {
 
 	private final ConcurrentHashMap<TypeKey, Type> classes = new ConcurrentHashMap<TypeKey, Type>();
-	private final ConcurrentHashMap<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariables = new ConcurrentHashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
+	private final ConcurrentHashMap<java.lang.reflect.WildcardType, WildcardType> wildcards =
+			new ConcurrentHashMap<java.lang.reflect.WildcardType, WildcardType>();
 
 	public Type getOrInitClass(Class<?> clazz, java.lang.reflect.Type... typeArguments){
 		TypeKey key = new TypeKey(clazz, typeArguments);
@@ -24,11 +25,11 @@ public abstract class TypeCache {
 		return result;
 	}
 
-	public TypeVariable getOrInitTypeVariable(java.lang.reflect.TypeVariable<?> var){
-		TypeVariable result = typeVariables.get(var);
+	public Type getOrInitWildcard(java.lang.reflect.WildcardType jWildcard){
+		Type result = wildcards.get(jWildcard);
 		if(result == null){
-			TypeVariable t = initTypeVariable(var);
-			result = typeVariables.putIfAbsent(var, t);
+			WildcardType t = initWildcard(jWildcard);
+			result = wildcards.putIfAbsent(jWildcard, t);
 			if(result == null){
 				result = t;
 			}
@@ -36,12 +37,14 @@ public abstract class TypeCache {
 		return result;
 	}
 
+
 	public void clear(){
 		classes.clear();
+		wildcards.clear();
 	}
 
 	public abstract Type initClass(Class<?> clazz, java.lang.reflect.Type[] typeArguments);
-	public abstract TypeVariable initTypeVariable(java.lang.reflect.TypeVariable<?> var);
+	public abstract WildcardType initWildcard(java.lang.reflect.WildcardType jWildcard);
 
 	private static class TypeKey {
 		Class<?> clazz;

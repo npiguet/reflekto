@@ -12,6 +12,7 @@ import org.nextflection.GenericDeclaration;
 import org.nextflection.Method;
 import org.nextflection.Type;
 import org.nextflection.TypeVariable;
+import org.nextflection.WildcardType;
 
 public class DefaultReflector implements FullReflector {
 
@@ -31,8 +32,8 @@ public class DefaultReflector implements FullReflector {
 		}
 
 		@Override
-		public TypeVariable initTypeVariable(java.lang.reflect.TypeVariable<?> var) {
-			return reflect(var);
+		public WildcardType initWildcard(java.lang.reflect.WildcardType jWildcard) {
+			return reflect(jWildcard);
 		}
 	};
 
@@ -47,8 +48,7 @@ public class DefaultReflector implements FullReflector {
 		} else if (type instanceof java.lang.reflect.TypeVariable){
 			return reflect((java.lang.reflect.TypeVariable<?>)type);
 		} else if (type instanceof java.lang.reflect.WildcardType){
-			// TODO
-			throw new UnsupportedOperationException();
+			return reflect((java.lang.reflect.WildcardType)type);
 		} else if (type instanceof java.lang.reflect.ParameterizedType){
 			return reflect((java.lang.reflect.ParameterizedType)type);
 		}
@@ -77,6 +77,10 @@ public class DefaultReflector implements FullReflector {
 	protected Type reflectClassOrInterface(Class<?> clazz){
 		assert !clazz.isPrimitive() && !clazz.isArray();
 		return new DefaultClassType(clazz, this);
+	}
+
+	public WildcardType reflect(java.lang.reflect.WildcardType jWildcard){
+		return new DefaultWildcardType(jWildcard, this);
 	}
 
 	protected Type reflectParameterizedClass(Class<?> jRawClass, java.lang.reflect.Type[] jTypeArguments) {

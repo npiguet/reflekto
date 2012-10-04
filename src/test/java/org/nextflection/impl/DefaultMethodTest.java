@@ -1,13 +1,13 @@
 package org.nextflection.impl;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 import org.nextflection.ClassType;
 import org.nextflection.Method;
 import org.nextflection.Methods;
 
-public class MethodTest {
+public class DefaultMethodTest {
 
 	private DefaultReflector reflector = new DefaultReflector();
 
@@ -18,11 +18,15 @@ public class MethodTest {
 
 		// primitive return type
 		Method m = meths.withName("hashCode").get(0);
-		Assert.assertEquals("public int hashCode()", m.declarationString());
+		assertEquals("public int hashCode()", m.declarationString());
 
 		// void return type
 		m = meths.withName("notify").get(0);
-		Assert.assertEquals("public final void notify()", m.declarationString());
+		assertEquals("public final void notify()", m.declarationString());
+
+		// Wildcard return type
+		m = meths.withName("getClass").get(0);
+		assertEquals("public final java.lang.Class<?> getClass()", m.declarationString());
 	}
 
 }
