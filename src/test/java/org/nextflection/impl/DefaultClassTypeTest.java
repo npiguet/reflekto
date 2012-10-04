@@ -90,6 +90,14 @@ public class DefaultClassTypeTest {
 		// TODO
 	}
 
+	@Test
+	public void testMethods(){
+		// No super types
+		assertEquals(12, reflect(Object.class).methods().size());
+		// TODO: with super type and no override (maybe in DefaultMethodsTest)
+		// TODO: with super type and override (maybe in DefaultMethodsTest)
+	}
+
 	public void assertGenericName(Class<?> clazz, String expectedFull, String expectedSimple, String expectedCanonical){
 		assertName(reflect(clazz).getGenericName(), expectedFull, expectedSimple, expectedCanonical);
 	}

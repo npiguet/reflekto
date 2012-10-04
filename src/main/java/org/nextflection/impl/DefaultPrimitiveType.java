@@ -37,12 +37,22 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 
 	@Override
 	public TypeName getRawName() {
-		// TODO Auto-generated method stub
-		return null;
+		return new AbstractTypeName(){
+			public String full() {
+				return clazz.getName();
+			}
+
+			public String simple() {
+				return clazz.getName();
+			}
+
+			public String canonical() {
+				return clazz.getName();
+			}
+		};
 	}
 
 	public TypeName getGenericName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getRawName();
 	}
 }

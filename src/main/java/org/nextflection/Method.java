@@ -5,8 +5,18 @@ import java.util.List;
 public interface Method extends Member, GenericDeclaration {
 
 	public Method withErasure();
+	public List<Type> getDeclaredParameterTypes();
+	public List<Type> getActualParameterTypes();
+	public List<TypeVariable> getDeclaredTypeParameters();
+	public List<TypeVariable> getActualTypeParameters();
+	public Type getDeclaredReturnType();
+	public Type getActualReturnType();
+	public Type getInferredReturnType(List<Type> argumentTypes);
+	public boolean isPublic();
+	public boolean isPackageProtected();
+	public boolean isProtected();
+	public boolean isPrivate();
+	public boolean isAbstract();
+	public boolean isFinal();
 
-	public Method withTypeArguments(List<TypeVariable> variable, List<Type> value);
-
-	public Method withTypeArguments(List<Type> values);
 }

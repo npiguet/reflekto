@@ -7,6 +7,6 @@ import java.util.List;
  */
 public interface GenericDeclaration extends Parameterizable {
 
-	public List<TypeVariable> getTypeParameters();
+	public List<TypeVariable> getDeclaredTypeParameters();
 
 }

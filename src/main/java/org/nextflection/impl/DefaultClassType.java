@@ -9,6 +9,7 @@ import org.nextflection.ClassType;
 import org.nextflection.Constructor;
 import org.nextflection.Field;
 import org.nextflection.Method;
+import org.nextflection.Methods;
 import org.nextflection.Type;
 import org.nextflection.TypeName;
 import org.nextflection.TypeVariable;
@@ -22,9 +23,9 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			return initTypeParameters();
 		}
 	};
-	private final ReadOnlyReference<List<Method>> methods = new LazyInit<List<Method>>(){
+	private final ReadOnlyReference<Methods> methods = new LazyInit<Methods>(){
 		@Override
-		protected List<Method> init() {
+		protected Methods init() {
 			return initMethods();
 		}
 	};
@@ -100,14 +101,26 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return Collections.unmodifiableList(flds);
 	}
 
-	private List<Method> initMethods() {
-		// TODO: replace the type variables by their values if necessary
-		java.lang.reflect.Method[] langMethods = clazz.getDeclaredMethods();
-		List<Method> meths = new ArrayList<Method>(langMethods.length);
-		for (java.lang.reflect.Method m : langMethods) {
-			meths.add(reflector.reflect(m, this));
+	private Methods initMethods() {
+		List<Methods> superTypesMethods = new ArrayList<Methods>();
+		if(this.getSuperClass() != null){
+			superTypesMethods.add(this.getSuperClass().methods());
 		}
-		return Collections.unmodifiableList(meths);
+		for(ClassType iface : this.getInterfaces()){
+			superTypesMethods.add(iface.methods());
+		}
+
+		List<Method> thisMethods = initThisClassMethods();
+		return new DefaultMethods(thisMethods, superTypesMethods);
+	}
+
+	private List<Method> initThisClassMethods(){
+		java.lang.reflect.Method[] jMethods = clazz.getDeclaredMethods();
+		List<Method> methods = new ArrayList<Method>();
+		for(java.lang.reflect.Method jMethod : jMethods){
+			methods.add(reflector.reflect(jMethod, this));
+		}
+		return methods;
 	}
 
 	private ClassType initSuperClass(){
@@ -282,5 +295,25 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		}
 		DefaultClassType other = (DefaultClassType) obj;
 		return this.clazz.equals(other.clazz);
+	}
+
+	public Methods methods() {
+		return this.methods.get();
+	}
+
+	public ClassType getSuperClass() {
+		return this.superClass.get();
+	}
+
+	public List<ClassType> getInterfaces() {
+		return this.interfaces.get();
+	}
+
+	public List<TypeVariable> getDeclaredTypeParameters() {
+		return declaredTypeParameters.get();
+	}
+
+	public List<Type> getActualTypeParameters() {
+		return actualTypeParameters.get();
 	}
 }
