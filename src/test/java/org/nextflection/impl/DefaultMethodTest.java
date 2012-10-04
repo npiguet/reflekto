@@ -27,6 +27,14 @@ public class DefaultMethodTest {
 		// Wildcard return type
 		m = meths.withName("getClass").get(0);
 		assertEquals("public final java.lang.Class<?> getClass()", m.declarationString());
+
+		// class return type
+		m = meths.withName("toString").get(0);
+		assertEquals("public java.lang.String toString()", m.declarationString());
+
+		// with parameters
+		m = meths.withName("equals").get(0);
+		assertEquals("public boolean equals(java.lang.Object)", m.declarationString());
 	}
 
 }

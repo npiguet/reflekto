@@ -138,9 +138,9 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 				builder.append(", ");
 			}
 			if(returnType instanceof TypeVariable){
-				builder.append(returnType.getGenericName().simple());
+				builder.append(parameterTypes.get(i).getGenericName().simple());
 			} else {
-				builder.append(returnType.getGenericName().full());
+				builder.append(parameterTypes.get(i).getGenericName().full());
 			}
 		}
 		builder.append(')');
