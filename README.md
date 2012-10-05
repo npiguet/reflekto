@@ -14,14 +14,14 @@ Not if you look at it from the java language point of view. When you look at the
 
  - When a class contains multiple overloaded methods, there is no easy way to figure out which one would be called by a java program given a list of parameter types. There is no way to find which of those methods has the most specific signature as defined in the JLS. 
 
- - There is no way to figure out if a specific class or member should be visible, when trying to look at it from another class (eg: is AbstractList.removeRange(int, int) visible from java.util.HashSet?).
+ - There is no way to figure out if a specific class or member should be visible, when trying to look at it from another class (eg: is `AbstractList.removeRange(int, int)` visible from `java.util.HashSet`?).
 
  - There is no way to find out if a method overrides another. This matter is made even worse due to the poor support for generics (see below).
 
 Generics in particular, only have a very limited support in java.lang.reflect through methods like getGenericFoo(), and are very inconvenient to work with.
 
- - When a Type is a generic invocation of a parameterized class, and that therefore the type variables have been assigned a value, there is no easy way to figure out the actual types of fields, method arguments, return types, etc... eg: in Map<String, Integer>, what is the return type of the keySet() method?
+ - When a Type is a generic invocation of a parameterized class, and that therefore the type variables have been assigned a value, there is no easy way to figure out the actual types of fields, method arguments, return types, etc... eg: in `Map<String, Integer>`, what is the return type of the `keySet()` method?
 
- - When a method that declares a type parameter T returns an object of a type using that type variable, there is no way to find out what is the actual return type. If I call Arrays.asList() (<T> List<T> asList(T... values)) with a String[], what is the actual return type of the method?
+ - When a method that declares a type parameter T returns an object of a type using that type variable, there is no way to find out what is the actual return type. If I call `Arrays.asList()` (declared as `public static <T> List<T> asList(T... values)`) with a `String[]` parameter, what is the actual return type of the method?
 
 These are only a few example of the problems that are left unsolved by the java reflection API, but they clearly expose the major difference between java.lang.reflect and Nextflection. One is a low level wrapper for the .class file format, and the other is a high level introspection library for the Java language.
