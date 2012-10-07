@@ -16,6 +16,11 @@ public abstract class AbstractType extends AbstractElement implements Type {
 		return getGenericName().full();
 	}
 
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 	public TypeName getRawName() {
 		return new AbstractTypeName(){
 

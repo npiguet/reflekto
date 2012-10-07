@@ -25,11 +25,6 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 		throw new UnsupportedOperationException("Not applicable to PrimitiveType");
 	}
 
-	@Override
-	public String toString() {
-		return clazz.getName();
-	}
-
 	public String declarationString() {
 		// TODO Auto-generated method stub
 		return null;
@@ -54,5 +49,25 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 
 	public TypeName getGenericName() {
 		return getRawName();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 29;
+		int result = 1;
+		result = prime * result + clazz.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultClassType other = (DefaultClassType) obj;
+		return this.clazz.equals(other.clazz);
 	}
 }

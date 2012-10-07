@@ -84,6 +84,11 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return null;
 	}
 
+	@Override
+	public String toString(){
+		return getGenericName().full();
+	}
+
 	public TypeName getGenericName() {
 		return new AbstractTypeName(){
 			public String full() {
@@ -115,5 +120,25 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 				return s.toString();
 			}
 		};
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 17;
+		result = prime * result + typeVariable.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()){
+			return false;
+		}
+		DefaultTypeVariable other = (DefaultTypeVariable) obj;
+		return this.typeVariable.equals(other.typeVariable);
 	}
 }

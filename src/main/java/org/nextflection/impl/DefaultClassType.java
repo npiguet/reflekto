@@ -182,11 +182,6 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return (Object)this.declaredTypeParameters != this.actualTypeParameters;
 	}
 
-	@Override
-	public String toString() {
-		return clazz.toString();
-	}
-
 	public String declarationString() {
 		// declaration
 		StringBuilder s = new StringBuilder();
@@ -292,7 +287,8 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * clazz.hashCode();
+		result = prime * result + clazz.hashCode();
+		result = prime * result + getActualTypeParameters().hashCode();
 		return result;
 	}
 
@@ -305,7 +301,8 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			return false;
 		}
 		DefaultClassType other = (DefaultClassType) obj;
-		return this.clazz.equals(other.clazz);
+		return this.clazz.equals(other.clazz) && //
+				this.getActualTypeParameters().equals(other.getActualTypeParameters());
 	}
 
 	public Methods methods() {

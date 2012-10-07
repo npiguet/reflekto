@@ -67,8 +67,7 @@ public class DefaultWildcardType extends AbstractElement implements WildcardType
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getGenericName().full();
 	}
 
 	public TypeName getRawName() {
@@ -148,4 +147,34 @@ public class DefaultWildcardType extends AbstractElement implements WildcardType
 	public List<Type> getLowerBounds() {
 		return lowerBound.get();
 	}
+
+	@Override
+	public String toString(){
+		return getName();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 37;
+		int result = 5;
+		// wildcard.hashCode() already hashed the bounds, so we
+		// don't need to it ourselves
+		result = prime * result + wildcard.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultWildcardType other = (DefaultWildcardType) obj;
+		// this already compares the bounds, so there is not need to do it ourselves
+		return other.wildcard.equals(this.wildcard);
+	}
+
+
 }
