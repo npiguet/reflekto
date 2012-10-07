@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.nextflection.Accesses;
+import org.nextflection.AccessFilter;
 import org.nextflection.ClassType;
 import org.nextflection.Method;
 import org.nextflection.Methods;
@@ -23,7 +23,7 @@ public class DefaultMethods implements Methods {
 		return methods.iterator();
 	}
 
-	public Methods withAccess(Accesses accesses) {
+	public Methods withAccess(AccessFilter accessFilter) {
 		// TODO Auto-generated method stub
 		return null;
 	}

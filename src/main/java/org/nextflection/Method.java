@@ -12,6 +12,8 @@ public interface Method extends Member, GenericDeclaration {
 	public Type getDeclaredReturnType();
 	public Type getActualReturnType();
 	public Type getInferredReturnType(List<Type> argumentTypes);
+	public AccessModifier getAccessModifier();
+	public boolean isAccessibleFrom(ClassType clazz);
 	public boolean isPublic();
 	public boolean isPackageProtected();
 	public boolean isProtected();

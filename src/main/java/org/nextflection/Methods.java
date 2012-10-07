@@ -3,7 +3,7 @@ package org.nextflection;
 
 public interface Methods extends Iterable<Method> {
 
-	public Methods withAccess(Accesses accesses);
+	public Methods withAccess(AccessFilter accessFilter);
 	public Methods withName(String name);
 	public Methods withAbstract(boolean isAbstract);
 	public Methods withFinal(boolean isFinal);

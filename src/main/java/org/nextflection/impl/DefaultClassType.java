@@ -53,6 +53,12 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			return initInterfaces();
 		}
 	};
+	private final ReadOnlyReference<ClassType> enclosingClass = new LazyInit<ClassType>(){
+		@Override
+		protected ClassType init() {
+			return initEnclosingClass();
+		}
+	};
 
 	@SuppressWarnings("unchecked")
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
@@ -136,6 +142,11 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			types.add((ClassType)reflector.reflect(iface));
 		}
 		return Collections.unmodifiableList(types);
+	}
+
+	private ClassType initEnclosingClass(){
+		// TODO
+		return null;
 	}
 
 	public List<TypeVariable> getTypeParameters() {
@@ -315,5 +326,22 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	public List<Type> getActualTypeParameters() {
 		return actualTypeParameters.get();
+	}
+
+	public boolean isInnerClass() {
+		return clazz.getEnclosingClass() != null;
+	}
+
+	public ClassType getEnclosingClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ClassType getDeclaredClass() {
+		return (ClassType)reflector.reflect(clazz);
+	}
+
+	public String getPackage() {
+		return clazz.getPackage().getName();
 	}
 }

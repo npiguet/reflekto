@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.nextflection.AccessFilter;
+import org.nextflection.AccessModifier;
 import org.nextflection.ClassType;
 import org.nextflection.Method;
 import org.nextflection.Parameterizable;
@@ -242,5 +244,44 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 
 	public boolean isStatic(){
 		return Modifier.isStatic(method.getModifiers());
+	}
+
+
+	public boolean isAccessibleFrom(ClassType caller) {
+		// caller is the same class as declaringClass
+		// PRIVATE is visible
+		// TODO
+
+		// caller is an inner class (at any depth) of declaringClass
+		// PRIVATE is visible
+		// TODO
+
+		// caller is an enclosing class (at any depth) of declaringClass
+		// PRIVATE is visible
+		// TODO
+
+		// caller is in the same package as declaringClass
+		// PACKAGE is visible
+		if(this.declaringClass.getPackage().equals(caller.getPackage())){
+			return AccessFilter.PACKAGE.andMoreLenient().accepts(getAccessModifier());
+		}
+
+		// caller is a subType of declaringClass
+		// PROTECTED is visible
+		// TODO
+
+		// caller is a superType of declaringClass
+		// AND and this method overrides a method in caller
+		// PROTECTED is visible
+		// TODO
+
+		// caller has no relation to declaringClass
+		// PUBLIC is visible
+		return AccessFilter.PUBLIC.accepts(getAccessModifier());
+	}
+
+
+	public AccessModifier getAccessModifier() {
+		return AccessModifier.fromModifier(method.getModifiers());
 	}
 }
