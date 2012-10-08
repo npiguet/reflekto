@@ -176,5 +176,18 @@ public class DefaultWildcardType extends AbstractElement implements WildcardType
 		return other.wildcard.equals(this.wildcard);
 	}
 
+	public boolean isSuperTypeOf(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAssignableFrom(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isSameType(Type that) {
+		return this.equals(that);
+	}
 
 }

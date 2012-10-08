@@ -141,4 +141,32 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		DefaultTypeVariable other = (DefaultTypeVariable) obj;
 		return this.typeVariable.equals(other.typeVariable);
 	}
+
+	public boolean isSuperTypeOf(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAssignableFrom(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isSameType(Type other) {
+		if(other == this){
+			return true;
+		}
+		if(other == null || ! (other instanceof TypeVariable)){
+			return false;
+		}
+		TypeVariable that = (TypeVariable)other;
+		List<Type> thisBounds = this.getBounds();
+		List<Type> thatBounds = that.getBounds();
+		for(int i = 0; i < thisBounds.size(); i ++){
+			if(!thisBounds.get(i).isSameType(thatBounds.get(i))){
+				return false;
+			}
+		}
+		return true;
+	}
 }

@@ -304,6 +304,28 @@ public class DefaultClassType extends AbstractType implements ClassType {
 				this.getActualTypeParameters().equals(other.getActualTypeParameters());
 	}
 
+	public boolean isSameType(Type other) {
+		if(this == other){
+			return true;
+		}
+		if(other == null || ! (other instanceof ClassType)){
+			return false;
+		}
+		ClassType that = (ClassType)other;
+		if(!this.getRawName().full().equals(that.getRawName().full())){
+			return false;
+		}
+
+		List<Type> thisParams = this.getActualTypeParameters();
+		List<Type> thatParams = that.getActualTypeParameters();
+		for(int i = 0; i < thisParams.size(); i ++){
+			if(!thisParams.get(i).isSameType(thatParams.get(i))){
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public Methods methods() {
 		return this.methods.get();
 	}
@@ -348,6 +370,37 @@ public class DefaultClassType extends AbstractType implements ClassType {
 				return true;
 			}
 			thisEnclosing = thisEnclosing.getEnclosingClass().getDeclaredClass();
+		}
+		return false;
+	}
+
+	public boolean isSuperTypeOf(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAssignableFrom(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isSuperClassOf(ClassType that) {
+		// base cases
+		if(that.getDeclaredClass().equals(this.getDeclaredClass())){
+			return true;
+		}
+		if(that.getSuperClass() == null){
+			return false;
+		}
+
+		// recursion
+		if(this.isSuperClassOf(that.getSuperClass())){
+			return true;
+		}
+		for(ClassType thatIface : that.getInterfaces()){
+			if(this.isSuperClassOf(thatIface)){
+				return true;
+			}
 		}
 		return false;
 	}

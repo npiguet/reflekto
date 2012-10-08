@@ -49,4 +49,19 @@ public class DefaultArrayType extends AbstractType {
 		return null;
 	}
 
+	public boolean isSuperTypeOf(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAssignableFrom(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isSameType(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

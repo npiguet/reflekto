@@ -70,4 +70,18 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 		DefaultClassType other = (DefaultClassType) obj;
 		return this.clazz.equals(other.clazz);
 	}
+
+	public boolean isSuperTypeOf(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAssignableFrom(Type that) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isSameType(Type that) {
+		return this.equals(that);
+	}
 }

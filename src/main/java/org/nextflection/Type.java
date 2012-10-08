@@ -18,4 +18,10 @@ public interface Type extends Parameterizable {
 	public TypeName getGenericName();
 
 	public String declarationString();
+
+	public boolean isSameType(Type that);
+
+	public boolean isSuperTypeOf(Type that);
+
+	public boolean isAssignableFrom(Type that);
 }

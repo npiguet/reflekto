@@ -15,6 +15,7 @@ public interface ClassType extends ObjectType, GenericDeclaration {
 	public ClassType getEnclosingClass();
 	public ClassType getDeclaredClass();
 	public ClassType getSuperClass();
+	public boolean isSuperClassOf(ClassType that);
 	public List<ClassType> getInterfaces();
 	public List<Type> getActualTypeParameters();
 	public ClassType withTypeArguments(List<Type> values);

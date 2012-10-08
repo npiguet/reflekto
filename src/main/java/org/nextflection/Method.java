@@ -20,5 +20,7 @@ public interface Method extends Member, GenericDeclaration {
 	public boolean isPrivate();
 	public boolean isAbstract();
 	public boolean isFinal();
+	public boolean isSubsignature(Method that);
+	public boolean overrides(Method that);
 
 }
