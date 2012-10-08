@@ -11,6 +11,7 @@ public interface ClassType extends ObjectType, GenericDeclaration {
 	public Methods methods();
 	public boolean isGenericInvocation();
 	public boolean isInnerClass();
+	public boolean isInnerClassOf(ClassType enclosing);
 	public ClassType getEnclosingClass();
 	public ClassType getDeclaredClass();
 	public ClassType getSuperClass();

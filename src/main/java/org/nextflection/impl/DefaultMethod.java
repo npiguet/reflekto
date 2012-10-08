@@ -250,15 +250,15 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 	public boolean isAccessibleFrom(ClassType caller) {
 		// caller is the same class as declaringClass
 		// PRIVATE is visible
-		// TODO
+		if(this.declaringClass.getDeclaredClass().equals(caller.getDeclaredClass())){
+			return AccessFilter.PRIVATE.andMoreLenient().accepts(getAccessModifier());
+		}
 
-		// caller is an inner class (at any depth) of declaringClass
+		// caller is an inner class (at any depth) of declaringClass, or vice-versa
 		// PRIVATE is visible
-		// TODO
-
-		// caller is an enclosing class (at any depth) of declaringClass
-		// PRIVATE is visible
-		// TODO
+		if(declaringClass.isInnerClassOf(caller) || caller.isInnerClassOf(declaringClass)){
+			return AccessFilter.PRIVATE.andMoreLenient().accepts(getAccessModifier());
+		}
 
 		// caller is in the same package as declaringClass
 		// PACKAGE is visible

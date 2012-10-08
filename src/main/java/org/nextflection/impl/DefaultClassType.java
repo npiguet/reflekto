@@ -145,8 +145,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	private ClassType initEnclosingClass(){
-		// TODO
-		return null;
+		return (ClassType)reflector.reflect(clazz.getEnclosingClass());
 	}
 
 	public List<TypeVariable> getTypeParameters() {
@@ -330,8 +329,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public ClassType getEnclosingClass() {
-		// TODO Auto-generated method stub
-		return null;
+		return enclosingClass.get();
 	}
 
 	public ClassType getDeclaredClass() {
@@ -340,5 +338,17 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	public String getPackage() {
 		return clazz.getPackage().getName();
+	}
+
+	public boolean isInnerClassOf(ClassType enclosing) {
+		ClassType thisEnclosing = getEnclosingClass().getDeclaredClass();
+		ClassType thatEnclosing = enclosing.getDeclaredClass();
+		while(thisEnclosing != null){
+			if(thisEnclosing.equals(thatEnclosing)){
+				return true;
+			}
+			thisEnclosing = thisEnclosing.getEnclosingClass().getDeclaredClass();
+		}
+		return false;
 	}
 }
