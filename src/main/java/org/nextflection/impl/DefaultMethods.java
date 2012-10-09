@@ -23,7 +23,18 @@ public class DefaultMethods implements Methods {
 			putMethod(m);
 		}
 
-		// TODO: add the subtype methods if an overridden method doesn't already exists
+		// TODO: what is the order of method iheritance? Does the superClass have priority over interfaces?
+		for(Methods superMeths : superTypeMethods){
+			for(Method superMeth : superMeths){
+				if(this.getOverriding(superMeth) == null){
+					putMethod(superMeth);
+				}
+			}
+		}
+	}
+
+	public DefaultMethods(Collection<? extends Method> methods){
+		this(methods, Collections.<Methods>emptyList());
 	}
 
 	private void putMethod(Method m){
@@ -40,30 +51,47 @@ public class DefaultMethods implements Methods {
 		return methods.iterator();
 	}
 
-	public Methods withAccess(AccessFilter accessFilter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Methods withName(String name) {
+	public Methods withFilter(Filter filter){
 		List<Method> filtered = new ArrayList<Method>();
 		for(Method m : methods){
-			if(m.getName().equals(name)){
+			if(filter.accepts(m)){
 				filtered.add(m);
 			}
 		}
-		return new DefaultMethods(filtered, Collections.<Methods>emptyList());
+		return new DefaultMethods(filtered);
 	}
 
-	public Methods withAbstract(boolean isAbstract) {
-		// TODO Auto-generated method stub
-		return null;
-		// TODO: code it
+	public Methods withAccess(final AccessFilter accessFilter) {
+		return withFilter(new Filter(){
+			public boolean accepts(Method m) {
+				return accessFilter.accepts(m.getAccessModifier());
+			}
+		});
 	}
 
-	public Methods withFinal(boolean isFinal) {
-		// TODO Auto-generated method stub
-		return null;
+	public Methods withName(final String name) {
+		// here we don't use withFilter, because our methods are already sorted by name
+		List<Method> list = methodsByName.get(name);
+		if(list == null){
+			list = Collections.emptyList();
+		}
+		return new DefaultMethods(list);
+	}
+
+	public Methods withAbstract(final boolean isAbstract) {
+		return withFilter(new Filter(){
+			public boolean accepts(Method m) {
+				return m.isAbstract() == isAbstract;
+			}
+		});
+	}
+
+	public Methods withFinal(final boolean isFinal) {
+		return withFilter(new Filter(){
+			public boolean accepts(Method m) {
+				return m.isFinal() == isFinal;
+			}
+		});
 	}
 
 	public Methods withInherited(boolean includeDeclaredInSuperTypes) {

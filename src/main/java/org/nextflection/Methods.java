@@ -8,6 +8,7 @@ public interface Methods extends Iterable<Method> {
 	public Methods withAbstract(boolean isAbstract);
 	public Methods withFinal(boolean isFinal);
 	public Methods withInherited(boolean inherited);
+	public Methods withFilter(Filter filter);
 
 	public int size();
 	public Method get(int index);
@@ -15,4 +16,8 @@ public interface Methods extends Iterable<Method> {
 	public Method getExact(ClassType... parameterTypes);
 	public Method getOverriding(Method overriden);
 	public Method getOverridden(Method overriding);
+
+	public static interface Filter {
+		public boolean accepts(Method m);
+	}
 }
