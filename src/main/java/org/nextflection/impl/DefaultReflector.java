@@ -90,7 +90,7 @@ public class DefaultReflector implements FullReflector {
 		for(java.lang.reflect.Type arg : jTypeArguments){
 			typeArguments.add(reflect(arg));
 		}
-		return rawClass.withTypeArguments(typeArguments);
+		return rawClass.getGenericInvocation(typeArguments);
 	}
 
 	public TypeVariable reflect(java.lang.reflect.TypeVariable<?> var) {
@@ -120,7 +120,7 @@ public class DefaultReflector implements FullReflector {
 		return new DefaultMethod(m, declaringClass, this);
 	}
 
-	public ClassType withTypeArguments(ClassType original, List<Type> actualTypeParameters) {
+	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeParameters) {
 		return new DefaultClassType((DefaultClassType) original, actualTypeParameters);
 	}
 

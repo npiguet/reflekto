@@ -21,7 +21,7 @@ public class DefaultReflectorTest {
 	public void testReflectClass() {
 		Type t = reflector.reflect(Object.class);
 		assertTrue(t instanceof DefaultClassType);
-		assertEquals("class java.lang.Object", t.toString());
+		assertEquals("java.lang.Object", t.toString());
 	}
 
 	@Test

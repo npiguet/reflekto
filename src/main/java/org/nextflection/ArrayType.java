@@ -6,5 +6,5 @@ public interface ArrayType extends ObjectType {
 
 	public ArrayType withErasure();
 
-	public ArrayType withTypeArguments(List<TypeVariable> variable, List<Type> value);
+	public ArrayType assignVariables(List<TypeVariable> variable, List<Type> value);
 }

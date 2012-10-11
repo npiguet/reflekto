@@ -14,17 +14,43 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 
 	private final java.lang.reflect.TypeVariable<?> typeVariable;
 	private final GenericDeclaration genericDeclaration;
-	private final LazyInit<List<Type>> bounds = new LazyInit<List<Type>>(){
-		@Override
-		protected List<Type> init() {
-			return initBounds();
-		}
-	};
+	private final ReadOnlyReference<List<Type>> declaredBounds;
+	private final ReadOnlyReference<List<Type>> actualBounds;
 
 	public DefaultTypeVariable(java.lang.reflect.TypeVariable<?> var, GenericDeclaration declaration, FullReflector creator) {
 		super(creator);
 		this.typeVariable = var;
 		this.genericDeclaration = declaration;
+		this.declaredBounds = new LazyInit<List<Type>>(){
+			@Override
+			protected List<Type> init() {
+				return initDeclaredBounds();
+			}
+		};
+		this.actualBounds = declaredBounds;
+	}
+
+	/**
+	 * Builds a TypeVariable where the bounds are modified so that occurences of any of the
+	 * variables in vars are replaced by the corresponding value in values, and any occurence
+	 * of the original type variable is replaced by this type variable.
+	 */
+	protected DefaultTypeVariable(DefaultTypeVariable original, GenericDeclaration declaration, List<TypeVariable> vars, List<Type> values){
+		super(original.reflector);
+		this.typeVariable = original.typeVariable;
+		this.declaredBounds = original.declaredBounds;
+		this.genericDeclaration = declaration;
+
+		final List<TypeVariable> safeVars = new ArrayList<TypeVariable>(vars);
+		final List<Type> safeValues = new ArrayList<Type>(values);
+		safeVars.add(original);
+		safeValues.add(this);
+		this.actualBounds = new LazyInit<List<Type>>(){
+			@Override
+			protected List<Type> init() {
+				return initActualBounds(safeVars, safeValues);
+			}
+		};
 	}
 
 	public String getName() {
@@ -35,7 +61,7 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return genericDeclaration;
 	}
 
-	protected List<Type> initBounds(){
+	protected List<Type> initDeclaredBounds(){
 		List<Type> types = new ArrayList<Type>(typeVariable.getBounds().length);
 		for (java.lang.reflect.Type t : typeVariable.getBounds()) {
 			types.add(reflector.reflect(t));
@@ -43,12 +69,32 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return Collections.unmodifiableList(types);
 	}
 
-	public List<Type> getBounds() {
-		return bounds.get();
+	protected List<Type> initActualBounds(List<TypeVariable> vars, List<Type> values){
+		List<Type> bounds = new ArrayList<Type>(getDeclaredBounds().size());
+		for(Type declared : getDeclaredBounds()){
+			bounds.add(declared.assignVariables(vars, values));
+		}
+		return Collections.unmodifiableList(bounds);
 	}
 
-	public Type getLeftmostBound() {
-		return getBounds().get(0);
+	public List<Type> getDeclaredBounds() {
+		return declaredBounds.get();
+	}
+
+	public Type getDeclaredLeftmostBound() {
+		return getDeclaredBounds().get(0);
+	}
+
+	public List<Type> getActualBounds() {
+		return actualBounds.get();
+	}
+
+	public Type getActualLeftmostBound() {
+		return getActualBounds().get(0);
+	}
+
+	public boolean isGenericInvocation() {
+		return declaredBounds != actualBounds;
 	}
 
 	public ClassType withErasure() {
@@ -56,9 +102,25 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return null;
 	}
 
-	public TypeVariable withTypeArguments(List<TypeVariable> variable, List<Type> value){
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Called at the declaration site of this TypeVariable, when its bounds must be re-evaluated.
+	 */
+	public Type assignVariables(GenericDeclaration declaration, List<TypeVariable> variables, List<Type> values){
+		// TODO: call the appropriate method in the reflector instead
+		return new DefaultTypeVariable(this, declaration, variables, values);
+	}
+
+	/**
+	 * If this TypeVariable is part of the variables list then the corresponding value is returned,
+	 * otherwise this TypeVarible is returned. This method is supposed to be called when this variable is being
+	 * *used* (as opposed to being *declared* as a type parameter).
+	 */
+	public Type assignVariables(List<TypeVariable> variables, List<Type> values){
+		int index = variables.indexOf(this);
+		if(index >= 0){
+			return values.get(index);
+		}
+		return this;
 	}
 
 	public boolean isErasure() {
@@ -104,7 +166,7 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 			}
 
 			private String buildName(TypeName.Kind kind){
-				List<Type> bounds = getBounds();
+				List<Type> bounds = getActualBounds();
 				if(bounds.size() == 1 && bounds.get(0).equals(reflector.reflect(Object.class))){
 					return typeVariable.getName();
 				}
@@ -127,6 +189,8 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		final int prime = 31;
 		int result = 17;
 		result = prime * result + typeVariable.hashCode();
+		result = prime * result + genericDeclaration.hashCode();
+		result = prime * result + getActualBounds().hashCode();
 		return result;
 	}
 
@@ -139,7 +203,9 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 			return false;
 		}
 		DefaultTypeVariable other = (DefaultTypeVariable) obj;
-		return this.typeVariable.equals(other.typeVariable);
+		return this.typeVariable.equals(other.typeVariable) &&
+				this.genericDeclaration.equals(other.genericDeclaration) &&
+				this.getActualBounds().equals(other.getActualBounds());
 	}
 
 	public boolean isSuperTypeOf(Type that) {
@@ -160,8 +226,8 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 			return false;
 		}
 		TypeVariable that = (TypeVariable)other;
-		List<Type> thisBounds = this.getBounds();
-		List<Type> thatBounds = that.getBounds();
+		List<Type> thisBounds = this.getDeclaredBounds();
+		List<Type> thatBounds = that.getDeclaredBounds();
 		for(int i = 0; i < thisBounds.size(); i ++){
 			if(!thisBounds.get(i).isSameType(thatBounds.get(i))){
 				return false;

@@ -13,5 +13,5 @@ public interface Parameterizable {
 
 	public boolean isErasure();
 
-	public Parameterizable withTypeArguments(List<TypeVariable> variable, List<Type> value);
+	public Parameterizable assignVariables(List<TypeVariable> variable, List<Type> value);
 }

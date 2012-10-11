@@ -25,7 +25,7 @@ public class DefaultField extends AbstractCallableMember implements Field {
 		return type.isErasure();
 	}
 
-	public Field withTypeArguments(List<TypeVariable> variable, List<Type> value){
+	public Field assignVariables(List<TypeVariable> variable, List<Type> value){
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -24,7 +24,7 @@ public interface FullReflector extends Reflector {
 
 	public Method reflect(java.lang.reflect.Method m, ClassType declaringClass);
 
-	public ClassType withTypeArguments(ClassType original, List<Type> actualTypeArguments);
+	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeArguments);
 
 	public void clearTypeCache();
 }

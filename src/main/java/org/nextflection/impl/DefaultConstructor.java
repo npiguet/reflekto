@@ -26,7 +26,7 @@ public class DefaultConstructor extends AbstractMember implements Constructor {
 		return false;
 	}
 
-	public Constructor withTypeArguments(List<TypeVariable> variable, List<Type> value){
+	public Constructor assignVariables(List<TypeVariable> variable, List<Type> value){
 		// TODO Auto-generated method stub
 		return null;
 	}

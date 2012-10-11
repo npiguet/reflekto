@@ -7,7 +7,7 @@ public interface Type extends Parameterizable {
 
 	public boolean isErasure();
 
-	public Type withTypeArguments(List<TypeVariable> variables, List<Type> values);
+	public Type assignVariables(List<TypeVariable> variables, List<Type> values);
 
 	public boolean isPrimitive();
 

@@ -17,12 +17,7 @@ import org.nextflection.TypeVariable;
 public class DefaultClassType extends AbstractType implements ClassType {
 
 	private final ReadOnlyReference<List<Type>> actualTypeParameters;
-	private final ReadOnlyReference<List<TypeVariable>> declaredTypeParameters = new LazyInit<List<TypeVariable>>(){
-		@Override
-		protected List<TypeVariable> init() {
-			return initTypeParameters();
-		}
-	};
+	private final ReadOnlyReference<List<TypeVariable>> declaredTypeParameters;
 	private final ReadOnlyReference<Methods> methods = new LazyInit<Methods>(){
 		@Override
 		protected Methods init() {
@@ -63,6 +58,12 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	@SuppressWarnings("unchecked")
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
 		super(clazz, creator);
+		declaredTypeParameters = new LazyInit<List<TypeVariable>>(){
+			@Override
+			protected List<TypeVariable> init() {
+				return initTypeParameters();
+			}
+		};
 		// Yes, I know this is ugly, but since all of the involved objects are effectively final,
 		// it is effectively safe, and makes my life easier than carrying around two levels of wildcard types.
 		this.actualTypeParameters = (ReadOnlyReference<List<Type>>)(Object)this.declaredTypeParameters;
@@ -74,8 +75,23 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	 */
 	protected DefaultClassType(DefaultClassType original, List<Type> actualTypeParameters) {
 		super(original.clazz, original.reflector);
+		this.declaredTypeParameters = original.declaredTypeParameters;
 		List<Type> unmodifiable = Collections.unmodifiableList(new ArrayList<Type>(actualTypeParameters));
 		this.actualTypeParameters = new FinalReference<List<Type>>(unmodifiable);
+	}
+
+	protected DefaultClassType(final DefaultClassType original, List<TypeVariable> vars, List<Type> values){
+		super(original.clazz, original.reflector);
+		this.declaredTypeParameters = original.declaredTypeParameters;
+
+		final List<TypeVariable> safeVars = new ArrayList<TypeVariable>(vars);
+		final List<Type> safeValues = new ArrayList<Type>(values);
+		this.actualTypeParameters = new LazyInit<List<Type>>(){
+			@Override
+			protected List<Type> init() {
+				return initActualTypeParameters(original, safeVars, safeValues);
+			}
+		};
 	}
 
 	private List<TypeVariable> initTypeParameters() {
@@ -130,16 +146,19 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	private ClassType initSuperClass(){
-		// TODO: replace the type variables by their values if necessary
-		return (ClassType)reflector.reflect(clazz.getGenericSuperclass());
+		ClassType genericSuperClass = (ClassType)reflector.reflect(clazz.getGenericSuperclass());
+		if(genericSuperClass == null){
+			return null;
+		}
+		return genericSuperClass.assignVariables(getDeclaredTypeParameters(), getActualTypeParameters());
 	}
 
 	private List<ClassType> initInterfaces(){
-		// TODO: replace the type variables by their values if necessary
 		java.lang.reflect.Type[] ifaces = clazz.getGenericInterfaces();
 		List<ClassType> types = new ArrayList<ClassType>(ifaces.length);
 		for(java.lang.reflect.Type iface : ifaces){
-			types.add((ClassType)reflector.reflect(iface));
+			ClassType genericIface = (ClassType)reflector.reflect(iface);
+			types.add(genericIface.assignVariables(getDeclaredTypeParameters(), getActualTypeParameters()));
 		}
 		return Collections.unmodifiableList(types);
 	}
@@ -148,17 +167,32 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return (ClassType)reflector.reflect(clazz.getEnclosingClass());
 	}
 
+	private List<Type> initActualTypeParameters(DefaultClassType original, List<TypeVariable> variables, List<Type> values) {
+		List<Type> actual = new ArrayList<Type>(getDeclaredTypeParameters().size());
+		for(Type originalTypeArg : original.getActualTypeParameters()){
+			actual.add(originalTypeArg.assignVariables(variables, values));
+		}
+		return Collections.unmodifiableList(actual);
+	}
+
 	public List<TypeVariable> getTypeParameters() {
 		return declaredTypeParameters.get();
 	}
 
-	public ClassType withTypeArguments(List<TypeVariable> variables, List<Type> values){
-		// TODO Auto-generated method stub
-		return null;
+	public ClassType assignVariables(List<TypeVariable> variables, List<Type> values){
+		// TODO use a method from the reflector instead
+		// FIXME: Do not construct a new instance of ClassType if there is another one that already exists
+		return new DefaultClassType(this, variables, values);
 	}
 
-	public ClassType withTypeArguments(List<Type> values) {
-		return reflector.withTypeArguments(this, values);
+	public ClassType getGenericInvocation(List<Type> values) {
+		return reflector.reflectGenericInvocation(this, values);
+	}
+
+	public ClassType getGenericInvocation(ClassType genericDeclaringClass) {
+		// FIXME: attempt at creating a proper instance of a non-static inner class that lives inside a
+		//        generic invocation of its outer class
+		return null;
 	}
 
 	public ClassType withErasure() {

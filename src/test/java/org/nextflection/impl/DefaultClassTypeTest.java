@@ -16,7 +16,7 @@ public class DefaultClassTypeTest {
 
 	@Test
 	public void testToString(){
-		assertEquals(Object.class.toString(), reflect(Object.class).toString());
+		assertEquals("java.lang.Object", reflect(Object.class).toString());
 	}
 
 	@Test

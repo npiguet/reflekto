@@ -30,7 +30,15 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		}
 	};
 	private ReadOnlyReference<Type> actualReturnType;
+	private ReadOnlyReference<List<TypeVariable>> declaredTypeParameters = new LazyInit<List<TypeVariable>>(){
+		@Override
+		protected List<TypeVariable> init() {
+			return initDeclaredTypeParameters();
+		}
+	};
+	private ReadOnlyReference<List<Type>> actualTypeParameters;
 
+	@SuppressWarnings("unchecked")
 	public DefaultMethod(java.lang.reflect.Method m, ClassType declaringClass, FullReflector reflector) {
 		super(declaringClass, reflector);
 		this.method = m;
@@ -47,9 +55,18 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 					return initActualReturnType();
 				}
 			};
+			this.actualTypeParameters = new LazyInit<List<Type>>(){
+				@Override
+				protected List<Type> init() {
+					return initActualTypeParameters();
+				}
+			};
 		} else {
 			this.actualParameterTypes = this.declaredParameterTypes;
 			this.actualReturnType = this.declaredReturnType;
+			// Yes, I know this is ugly, but since all of the involved objects are effectively final,
+			// it is effectively safe, and makes my life easier than carrying around two levels of wildcard types.
+			this.actualTypeParameters = (ReadOnlyReference<List<Type>>)(Object)this.declaredTypeParameters;
 		}
 	}
 
@@ -67,13 +84,22 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		return reflector.reflect(method.getGenericReturnType());
 	}
 
+	private List<TypeVariable> initDeclaredTypeParameters() {
+		java.lang.reflect.TypeVariable<?>[] jTypeParams = method.getTypeParameters();
+		List<TypeVariable> typeParams = new ArrayList<TypeVariable>(jTypeParams.length);
+		for(java.lang.reflect.TypeVariable<?> jTypeParam : jTypeParams){
+			typeParams.add(reflector.reflect(jTypeParam));
+		}
+		return Collections.unmodifiableList(typeParams);
+	}
+
 	private List<Type> initActualParameterTypes() {
 		List<Type> declaredTypes = getDeclaredParameterTypes();
 		List<TypeVariable> declaredVars = this.getDeclaringClass().getDeclaredTypeParameters();
 		List<Type> actualVars = this.getDeclaringClass().getActualTypeParameters();
 		List<Type> actualTypes = new ArrayList<Type>(declaredTypes.size());
 		for(Type declaredType : declaredTypes){
-			actualTypes.add(declaredType.withTypeArguments(declaredVars, actualVars));
+			actualTypes.add(declaredType.assignVariables(declaredVars, actualVars));
 		}
 		return Collections.unmodifiableList(actualTypes);
 	}
@@ -82,7 +108,18 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		Type declaredReturnType = getDeclaredReturnType();
 		List<TypeVariable> declaredVars = this.getDeclaringClass().getDeclaredTypeParameters();
 		List<Type> actualVars = this.getDeclaringClass().getActualTypeParameters();
-		return declaredReturnType.withTypeArguments(declaredVars, actualVars);
+		return declaredReturnType.assignVariables(declaredVars, actualVars);
+	}
+
+	private List<Type> initActualTypeParameters() {
+		List<TypeVariable> declared = getDeclaredTypeParameters();
+		List<Type> actual = new ArrayList<Type>(declared.size());
+		List<TypeVariable> classDeclared = getDeclaringClass().getDeclaredTypeParameters();
+		List<Type> classActual = getDeclaringClass().getActualTypeParameters();
+		for(TypeVariable var : declared){
+			actual.add(var.assignVariables(classDeclared, classActual));
+		}
+		return  Collections.unmodifiableList(actual);
 	}
 
 	public String getName() {
@@ -112,7 +149,7 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		}
 
 		// type parameters
-		List<TypeVariable> typeParameters = getActualTypeParameters();
+		List<Type> typeParameters = getActualTypeParameters();
 		if(typeParameters.size() > 0){
 			builder.append('<');
 			for(int i = 0; i < typeParameters.size(); i ++){
@@ -155,7 +192,7 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		return false;
 	}
 
-	public Parameterizable withTypeArguments(List<TypeVariable> variable,
+	public Parameterizable assignVariables(List<TypeVariable> variable,
 			List<Type> value) {
 		// TODO Auto-generated method stub
 		return null;
@@ -175,13 +212,11 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 	}
 
 	public List<TypeVariable> getDeclaredTypeParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		return declaredTypeParameters.get();
 	}
 
-	public List<TypeVariable> getActualTypeParameters() {
-		// TODO Auto-generated method stub
-		return Collections.emptyList();
+	public List<Type> getActualTypeParameters() {
+		return actualTypeParameters.get();
 	}
 
 	public Type getDeclaredReturnType() {
@@ -372,5 +407,10 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 			}
 		}
 		return true;
+	}
+
+	public Method assignTypeVariables(List<TypeVariable> vars, List<Type> values) {
+		// TODO: code it
+		return null;
 	}
 }

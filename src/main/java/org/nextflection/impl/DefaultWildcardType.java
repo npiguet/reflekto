@@ -56,8 +56,7 @@ public class DefaultWildcardType extends AbstractElement implements WildcardType
 		return false;
 	}
 
-	public Type withTypeArguments(List<TypeVariable> variables,
-			List<Type> values) {
+	public Type assignVariables(List<TypeVariable> variables, List<Type> values) {
 		// TODO Auto-generated method stub
 		return null;
 	}

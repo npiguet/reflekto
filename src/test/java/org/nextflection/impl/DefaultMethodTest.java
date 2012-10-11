@@ -2,6 +2,10 @@ package org.nextflection.impl;
 
 import static junit.framework.Assert.assertEquals;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.junit.Test;
 import org.nextflection.ClassType;
 import org.nextflection.Method;
@@ -13,28 +17,28 @@ public class DefaultMethodTest {
 
 	@Test
 	public void testDeclarationString(){
-		ClassType obj = (ClassType)reflector.reflect(Object.class);
-		Methods meths = obj.methods();
-
 		// primitive return type
-		Method m = meths.withName("hashCode").get(0);
-		assertEquals("public int hashCode()", m.declarationString());
-
-		// void return type
-		m = meths.withName("notify").get(0);
-		assertEquals("public final void notify()", m.declarationString());
-
-		// Wildcard return type
-		m = meths.withName("getClass").get(0);
-		assertEquals("public final java.lang.Class<?> getClass()", m.declarationString());
-
+		assertDeclarationString(Object.class, "hashCode", "public int hashCode()");
+		// void return type, and final
+		assertDeclarationString(Object.class, "notify", "public final void notify()");
+		// with generic return type
+		assertDeclarationString(Object.class, "getClass", "public final java.lang.Class<?> getClass()");
 		// class return type
-		m = meths.withName("toString").get(0);
-		assertEquals("public java.lang.String toString()", m.declarationString());
-
+		assertDeclarationString(Object.class, "toString", "public java.lang.String toString()");
 		// with parameters
-		m = meths.withName("equals").get(0);
-		assertEquals("public boolean equals(java.lang.Object)", m.declarationString());
+		assertDeclarationString(Object.class, "equals", "public boolean equals(java.lang.Object)");
+		// type variable return type
+		assertDeclarationString(ArrayList.class, "get", "public E get(int)");
+		// abstract class method
+		assertDeclarationString(AbstractList.class, "get", "public abstract E get(int)");
+		// interface method
+		assertDeclarationString(Iterator.class, "hasNext", "public abstract boolean hasNext()");
+	}
+
+	public void assertDeclarationString(Class<?> clazz, String methodName, String expectedDeclaration){
+		Methods meths = ((ClassType)reflector.reflect(clazz)).methods();
+		Method m = meths.withName(methodName).get(0);
+		assertEquals(expectedDeclaration, m.declarationString());
 	}
 
 }

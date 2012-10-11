@@ -43,7 +43,7 @@ public class DefaultArrayType extends AbstractType {
 		return null;
 	}
 
-	public Type withTypeArguments(List<TypeVariable> variables,
+	public Type assignVariables(List<TypeVariable> variables,
 			List<Type> values) {
 		// TODO Auto-generated method stub
 		return null;

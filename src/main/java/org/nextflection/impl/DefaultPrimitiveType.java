@@ -21,8 +21,8 @@ public class DefaultPrimitiveType extends AbstractType implements PrimitiveType 
 		return true;
 	}
 
-	public Type withTypeArguments(List<TypeVariable> variable, List<Type> value){
-		throw new UnsupportedOperationException("Not applicable to PrimitiveType");
+	public Type assignVariables(List<TypeVariable> variable, List<Type> value){
+		return this;
 	}
 
 	public String declarationString() {
