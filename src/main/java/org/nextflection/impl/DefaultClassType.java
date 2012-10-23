@@ -80,6 +80,15 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		this.actualTypeParameters = new FinalReference<List<Type>>(unmodifiable);
 	}
 
+	/**
+	 * Builds an copy of the original DefaultClassType with all the type parameters erased.
+	 */
+	protected DefaultClassType(DefaultClassType original){
+		super(original.clazz, original.reflector);
+		this.declaredTypeParameters = original.declaredTypeParameters;
+		this.actualTypeParameters = new FinalReference<List<Type>>(Collections.<Type>emptyList());
+	}
+
 	protected DefaultClassType(final DefaultClassType original, List<TypeVariable> vars, List<Type> values){
 		super(original.clazz, original.reflector);
 		this.declaredTypeParameters = original.declaredTypeParameters;
@@ -196,13 +205,14 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public ClassType withErasure() {
-		// TODO Auto-generated method stub
-		return null;
+		if(isErasure()){
+			return this;
+		}
+		return reflector.reflectErasure(this);
 	}
 
 	public boolean isErasure() {
-		// TODO Auto-generated method stub
-		return false;
+		return getActualTypeParameters().isEmpty();
 	}
 
 	public boolean isParameterizable() {

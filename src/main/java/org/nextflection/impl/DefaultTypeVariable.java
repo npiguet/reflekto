@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.nextflection.ClassType;
 import org.nextflection.GenericDeclaration;
 import org.nextflection.Type;
 import org.nextflection.TypeName;
@@ -97,9 +96,9 @@ public class DefaultTypeVariable extends AbstractElement implements TypeVariable
 		return declaredBounds != actualBounds;
 	}
 
-	public ClassType withErasure() {
-		// TODO Auto-generated method stub
-		return null;
+	public Type withErasure() {
+		// JLS §4.6: The erasure of a type variable (§4.4) is the erasure of its leftmost bound.
+		return this.getActualLeftmostBound().withErasure();
 	}
 
 	/**

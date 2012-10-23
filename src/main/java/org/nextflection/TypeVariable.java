@@ -11,6 +11,5 @@ public interface TypeVariable extends Type {
 	public List<Type> getActualBounds();
 	public Type getActualLeftmostBound();
 	public boolean isGenericInvocation();
-	public ClassType withErasure();
 	public Type assignVariables(GenericDeclaration declaration, List<TypeVariable> vars, List<Type> values);
 }

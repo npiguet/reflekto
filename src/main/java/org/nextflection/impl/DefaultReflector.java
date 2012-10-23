@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nextflection.ArrayType;
 import org.nextflection.ClassType;
 import org.nextflection.Constructor;
 import org.nextflection.Field;
@@ -43,8 +44,7 @@ public class DefaultReflector implements FullReflector {
 		} else if (type instanceof Class){
 			return reflect((Class<?>) type);
 		} else if (type instanceof java.lang.reflect.GenericArrayType){
-			// TODO
-			throw new UnsupportedOperationException();
+			return reflect((java.lang.reflect.GenericArrayType)type);
 		} else if (type instanceof java.lang.reflect.TypeVariable){
 			return reflect((java.lang.reflect.TypeVariable<?>)type);
 		} else if (type instanceof java.lang.reflect.WildcardType){
@@ -71,7 +71,11 @@ public class DefaultReflector implements FullReflector {
 
 	protected Type reflectArray(Class<?> clazz){
 		assert clazz.isArray();
-		return new DefaultArrayType(clazz, this);
+		return new DefaultArrayType(clazz.getComponentType(), this);
+	}
+
+	protected Type reflect(java.lang.reflect.GenericArrayType type){
+		return new DefaultArrayType(type.getGenericComponentType(), this);
 	}
 
 	protected Type reflectClassOrInterface(Class<?> clazz){
@@ -99,8 +103,9 @@ public class DefaultReflector implements FullReflector {
 		if(jDeclaration instanceof Class){
 			declaration = (ClassType)reflect((Class<?>)jDeclaration);
 		} else if (jDeclaration instanceof java.lang.reflect.Method) {
-			// TODO
-			throw new UnsupportedOperationException();
+			java.lang.reflect.Method jMethod = (java.lang.reflect.Method)jDeclaration;
+			ClassType ownerClass = (ClassType)reflect(jMethod.getDeclaringClass());
+			declaration = reflect(jMethod, ownerClass);
 		} else if (jDeclaration instanceof java.lang.reflect.Constructor) {
 			// TODO
 			throw new UnsupportedOperationException();
@@ -122,6 +127,26 @@ public class DefaultReflector implements FullReflector {
 
 	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeParameters) {
 		return new DefaultClassType((DefaultClassType) original, actualTypeParameters);
+	}
+
+	public WildcardType reflectGenericInvocation(WildcardType original, List<Type> lowerBounds, List<Type> upperBounds) {
+		return new DefaultWildcardType((DefaultWildcardType) original, lowerBounds, upperBounds);
+	}
+
+	public ArrayType reflectGenericInvocation(ArrayType original, Type elementType) {
+		return new DefaultArrayType((DefaultArrayType) original, elementType);
+	}
+
+	public ClassType reflectErasure(ClassType original) {
+		return new DefaultClassType((DefaultClassType)original);
+	}
+
+	public Method reflectErasure(Method original) {
+		return new DefaultMethod((DefaultMethod)original);
+	}
+
+	public ArrayType reflectErasure(ArrayType original) {
+		return new DefaultArrayType((DefaultArrayType)original);
 	}
 
 	public void clearTypeCache(){

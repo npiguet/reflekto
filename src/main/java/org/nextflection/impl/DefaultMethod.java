@@ -70,6 +70,32 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		}
 	}
 
+	/**
+	 * Builds an erasure version of the specified original method
+	 */
+	protected DefaultMethod(final DefaultMethod original){
+		super(original.getDeclaringClass(), original.reflector);
+		this.method = original.method;
+		this.actualTypeParameters = new FinalReference<List<Type>>(Collections.<Type>emptyList());
+		this.actualReturnType = new LazyInit<Type>(){
+			@Override
+			protected Type init() {
+				return original.getActualReturnType().withErasure();
+			}
+		};
+		this.actualParameterTypes = new LazyInit<List<Type>>(){
+			@Override
+			protected List<Type> init() {
+				List<Type> erased = new ArrayList<Type>(original.getActualParameterTypes().size());
+				for(Type t : original.getActualParameterTypes()){
+					Type te = t.withErasure();
+					erased.add(te);
+				}
+				return Collections.unmodifiableList(erased);
+			}
+		};
+	}
+
 
 	private List<Type> initDeclaredParameterTypes() {
 		java.lang.reflect.Type[] jParamTypes = method.getGenericParameterTypes();
@@ -99,7 +125,8 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		List<Type> actualVars = this.getDeclaringClass().getActualTypeParameters();
 		List<Type> actualTypes = new ArrayList<Type>(declaredTypes.size());
 		for(Type declaredType : declaredTypes){
-			actualTypes.add(declaredType.assignVariables(declaredVars, actualVars));
+			Type actualType = declaredType.assignVariables(declaredVars, actualVars);
+			actualTypes.add(actualType);
 		}
 		return Collections.unmodifiableList(actualTypes);
 	}
@@ -188,8 +215,18 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 	}
 
 	public boolean isErasure() {
-		// TODO Auto-generated method stub
-		return false;
+		if(!this.getActualTypeParameters().isEmpty()){
+			return false;
+		}
+		if(!this.getActualReturnType().isErasure()){
+			return false;
+		}
+		for(Type t : this.getActualParameterTypes()){
+			if(!t.isErasure()){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public Parameterizable assignVariables(List<TypeVariable> variable,
@@ -199,8 +236,22 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 	}
 
 	public Method withErasure() {
-		// TODO Auto-generated method stub
-		return null;
+		// JLS §4.6:
+		// Type erasure also maps the signature of a method to a signature that has no
+		// parameterized types or type variables. The erasure of a constructor or method
+		// signature s is a signature consisting of the same name as s and the erasures
+		// of all the formal parameter types given in s.
+		//
+		// The type parameters and the return type of a method also undergo erasure if
+		// the method's signature is erased.
+		//
+		// The erasure of the signature of a generic method has no type parameters.
+
+		if(this.isErasure()){
+			return this;
+		}
+
+		return reflector.reflectErasure(this);
 	}
 
 	public List<Type> getDeclaredParameterTypes() {

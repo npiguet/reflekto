@@ -28,6 +28,6 @@ public class DefaultReflectorTest {
 	public void testReflectArray() {
 		Type t = reflector.reflect(Object[].class);
 		assertTrue(t instanceof DefaultArrayType);
-		assertEquals("class [Ljava.lang.Object;", t.toString());
+		assertEquals("java.lang.Object[]", t.toString());
 	}
 }

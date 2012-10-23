@@ -12,22 +12,33 @@ import org.nextflection.WildcardType;
 public class DefaultWildcardType extends AbstractElement implements WildcardType {
 
 	private final java.lang.reflect.WildcardType wildcard;
-	private final ReadOnlyReference<List<Type>> upperBound = new LazyInit<List<Type>>(){
-		@Override
-		protected List<Type> init() {
-			return initUpperBounds();
-		}
-	};
-	private final ReadOnlyReference<List<Type>> lowerBound = new LazyInit<List<Type>>(){
-		@Override
-		protected List<Type> init() {
-			return initLowerBounds();
-		}
-	};
+	private final ReadOnlyReference<List<Type>> upperBound;
+	private final ReadOnlyReference<List<Type>> lowerBound;
 
 	public DefaultWildcardType(java.lang.reflect.WildcardType wildcard, FullReflector reflector) {
 		super(reflector);
 		this.wildcard = wildcard;
+		upperBound = new LazyInit<List<Type>>(){
+			@Override
+			protected List<Type> init() {
+				return initUpperBounds();
+			}
+		};
+		lowerBound = new LazyInit<List<Type>>(){
+			@Override
+			protected List<Type> init() {
+				return initLowerBounds();
+			}
+		};
+	}
+
+	public DefaultWildcardType(DefaultWildcardType original, List<Type> lowerBound, List<Type> upperBound){
+		super(original.reflector);
+		this.wildcard = original.wildcard;
+		List<Type> finalLowerBound = Collections.unmodifiableList(new ArrayList<Type>(lowerBound));
+		this.lowerBound = new FinalReference<List<Type>>(finalLowerBound);
+		List<Type> finalUpperBound = Collections.unmodifiableList(new ArrayList<Type>(upperBound));
+		this.upperBound = new FinalReference<List<Type>>(finalUpperBound);
 	}
 
 	private List<Type> initUpperBounds(){
@@ -57,8 +68,27 @@ public class DefaultWildcardType extends AbstractElement implements WildcardType
 	}
 
 	public Type assignVariables(List<TypeVariable> variables, List<Type> values) {
-		// TODO Auto-generated method stub
-		return null;
+		boolean changed = false;
+
+		List<Type> adjustedLbs = new ArrayList<Type>(getLowerBounds().size());
+		for(Type originalLb : this.getLowerBounds()){
+			Type adjustedLb = originalLb.assignVariables(variables, values);
+			adjustedLbs.add(adjustedLb);
+			changed |= !adjustedLb.equals(originalLb);
+		}
+
+		List<Type> adjustedUbs = new ArrayList<Type>(getLowerBounds().size());
+		for(Type originalUb : this.getUpperBounds()){
+			Type adjustedLb = originalUb.assignVariables(variables, values);
+			adjustedUbs.add(adjustedLb);
+			changed |= !adjustedLb.equals(originalUb);
+		}
+
+		if(!changed){
+			return this;
+		}
+
+		return reflector.reflectGenericInvocation(this, adjustedLbs, adjustedUbs);
 	}
 
 	public boolean isPrimitive() {
