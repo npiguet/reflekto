@@ -1,14 +1,21 @@
 package org.nextflection.impl;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.nextflection.ClassType;
 import org.nextflection.TypeName;
 
 public class DefaultClassTypeTest {
@@ -96,6 +103,57 @@ public class DefaultClassTypeTest {
 		assertEquals(12, reflect(Object.class).methods().size());
 		// TODO: with super type and no override (maybe in DefaultMethodsTest)
 		// TODO: with super type and override (maybe in DefaultMethodsTest)
+	}
+
+	@Test
+	public void testIsErasure(){
+		assertTrue(reflect(Object.class).isErasure());
+		assertFalse(reflect(ArrayList.class).isErasure());
+	}
+
+	@Test
+	public void testWithErasure(){
+		// when
+		ClassType erased = reflect(ArrayList.class).withErasure();
+
+		// then
+		assertTrue(erased.isErasure());
+		assertEquals("java.util.ArrayList", erased.getName());
+		assertEquals("public java.lang.Object get(int)", erased.methods().withName("get").get(0).declarationString());
+	}
+
+	@Test
+	public void testIsSameType() {
+		assertTrue(reflect(ArrayList.class).isSameType(reflect(ArrayList.class)));
+		assertFalse(reflect(ArrayList.class).isSameType(reflector.reflect(int.class)));
+	}
+
+	@Test
+	public void testIsInnerClassOf() {
+		assertTrue(reflect(Map.Entry.class).isInnerClassOf(reflect(Map.class)));
+		assertFalse(reflect(Object.class).isInnerClassOf(reflect(ArrayList.class)));
+	}
+
+	@Test
+	public void testGetMethods() {
+		assertEquals(4, reflect(Object.class).methods().size());
+		// TODO: verify methods inherited from superclass but not overriden in subclass are present
+		// TODO: verify methods inherited from interface but not implemented in implementing class are present
+	}
+
+	@Test
+	public void testIsSuperClassOf() {
+		// Direct subclass
+		assertTrue(reflect(Object.class).isSuperClassOf(reflect(Number.class)));
+		// Indirect subclass
+		assertTrue(reflect(Object.class).isSuperClassOf(reflect(Integer.class)));
+		// Interface
+		assertTrue(reflect(MouseListener.class).isSuperClassOf(reflect(MouseAdapter.class)));
+		// isSuperClassOf ignores generics
+		assertTrue(reflect(List.class).withErasure().isSuperClassOf(reflect(ArrayList.class)));
+
+		// doesn't work
+		assertFalse(reflect(Integer.class).isSuperClassOf(reflect(Object.class)));
 	}
 
 	public void assertGenericName(Class<?> clazz, String expectedFull, String expectedSimple, String expectedCanonical){
