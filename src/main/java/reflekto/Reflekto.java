@@ -2,7 +2,7 @@ package reflekto;
 
 import reflekto.impl.DefaultReflector;
 
-public class Nextflection {
+public class Reflekto {
 
 	private static final Reflector REFLECTOR = new DefaultReflector();
 
