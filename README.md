@@ -15,6 +15,7 @@ There are several cases where java.lang.reflect leaks the implementation details
 ### Its support for inheritance is minimal ###
 The only tools that `java.lang.Class` gives you to figure out inheritance are the `getSuperClass()` and `getInterfaces()` methods. Inheritance of methods and fields is completely ignored and has to be figured out manually by the user. `getMethods()` (and its analog `getFields()`) does return inherited methods, but only the public ones.
 
+### Its support for overriding is inexistant ###
 The reflection API also does not provide any way to find out if a method overrides another, which is a pretty difficult problem to solve. This matter is made even worse due to the poor support for generics (see below).
 
 ### Its support for class and members visibility is minimal ###
@@ -29,3 +30,23 @@ Generics support was bolted on top of the existing API in java 1.5. Methods like
 When a Type is a generic invocation (`Map<String, Integer>`) of a parameterized type (`Map<K, V>`) and that therefore the type variables have been assigned a value, there is no easy way to figure out the actual types of fields, methods arguments, return types, etc... eg: in `Map<String, Integer>`, what is the return type of the `keySet()` method?
 
 When a method that declares a type parameter `<T>` returns an object of a type using that type variable, there is no way to find out what is the actual return type. If I call `Arrays.asList()` (declared as `public static <T> List<T> asList(T... values)`) with a `String[]` parameter, the java reflection API does not provide any way to find the actual return type of the method (`List<String>` in this case)?
+
+## How does Reflekto help (aka: Show me some examples) ##
+
+### It fully supports inheritance and overriding ###
+Getting all methods of a class:
+``` java
+Methods methods = Reflekto.reflect(ArrayList.class).methods();
+// methods contains all the methods declared in ArrayList plus all the
+// methods of all super-types  that are visible  from ArrayList and not 
+// overridden. Which means it contains AbstractList.removeRange(int, int)
+// (protected), but not AbstractList.outOfBoundsMsg(int) (private)
+```
+Finding out if a method overrides another:
+``` java
+Method inSubclass = Reflekto.reflect(Integer.class).methods().getExact("intValue()");
+Method inSuperClass = Reflekto.reflect(Number.class).methods().getExact("intValue()");
+inSubClass.overrides(inSuperclass); // return true
+``` 
+
+### Visibility is easy to 
