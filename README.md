@@ -32,11 +32,11 @@ When a Type is a generic invocation (`Map<String, Integer>`) of a parameterized 
 When a method that declares a type parameter `<T>` returns an object of a type using that type variable, there is no way to find out what is the actual return type. If I call `Arrays.asList()` (declared as `public static <T> List<T> asList(T... values)`) with a `String[]` parameter, the java reflection API does not provide any way to find the actual return type of the method (`List<String>` in this case)?
 
 ## How does Reflekto help (aka: Show me some examples) ##
-
-### It fully supports inheritance and overriding ###
+Let's look at a few examples of complex problems that Reflekto will solves for you
+### Members inheritance and overriding ###
 Getting all methods of a class:
 ``` java
-Methods methods = Reflekto.reflect(ArrayList.class).methods();
+Methods methods = reflect(ArrayList.class).methods();
 // methods contains all the methods declared in ArrayList plus all the
 // methods of all super-types  that are visible  from ArrayList and not 
 // overridden. Which means it contains AbstractList.removeRange(int, int)
@@ -44,9 +44,25 @@ Methods methods = Reflekto.reflect(ArrayList.class).methods();
 ```
 Finding out if a method overrides another:
 ``` java
-Method inSubclass = Reflekto.reflect(Integer.class).methods().getExact("intValue()");
-Method inSuperClass = Reflekto.reflect(Number.class).methods().getExact("intValue()");
-inSubClass.overrides(inSuperclass); // return true
+Method inSubclass = reflect(Integer.class).methods().getExact("intValue");
+Method inSuperClass = reflect(Number.class).methods().getExact("intValue");
+inSubClass.overrides(inSuperclass); // true
 ``` 
 
-### Visibility is easy to 
+### Members visibility
+Is `AbstractList.removeRange(int,int)` visible from `ArrayList`? What about from `Integer`?
+``` java
+ClassType intClass = reflect(int.class);
+Method removeRange = reflect(AbstractList.class).methods().getExact("removeRange", intClass, intClass);
+removeRange.isVisibleFrom(reflect(ArrayList.class)); // true
+removeRange.isVisibleFrom(reflect(Integer.class)); // false
+```
+
+### Overloading and method resolution
+Which version of `ArrayList.remove()` should I call, given an argument of type `int`? What about `Integer`?
+``` java
+reflect(ArrayList.class).methods().getMostSpecific("remove", reflect(Integer.class)); // returns remove(Object)
+reflect(ArrayList.class).methods().getMostSpecific("remove", reflect(int.class)); // returns remove(int)
+```
+
+### Generics
