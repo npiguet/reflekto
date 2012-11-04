@@ -20,6 +20,7 @@ public interface ClassType extends ObjectType, GenericDeclaration {
 	public List<Type> getActualTypeParameters();
 	public ClassType getGenericInvocation(List<Type> values);
 	public ClassType assignVariables(List<TypeVariable> variables, List<Type> values);
+	public ClassType withErasure();
 	// FIXME: attempt at creating a proper instance of a non-static inner class that lives inside a
 	//        generic invocation of its outer class
 	public ClassType getGenericInvocation(ClassType genericDeclaringClass);

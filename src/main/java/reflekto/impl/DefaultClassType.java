@@ -407,6 +407,10 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public boolean isInnerClassOf(ClassType enclosing) {
+		if(!this.isInnerClass()){
+			return false;
+		}
+
 		ClassType thisEnclosing = getEnclosingClass().getDeclaredClass();
 		ClassType thatEnclosing = enclosing.getDeclaredClass();
 		while(thisEnclosing != null){

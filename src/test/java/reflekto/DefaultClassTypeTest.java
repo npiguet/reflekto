@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.AbstractCellEditor;
+
 import org.junit.Test;
 
-import reflekto.ClassType;
-import reflekto.TypeName;
 import reflekto.impl.DefaultClassType;
 import reflekto.impl.DefaultReflector;
 
@@ -101,14 +101,6 @@ public class DefaultClassTypeTest {
 	}
 
 	@Test
-	public void testMethods(){
-		// No super types
-		assertEquals(12, reflect(Object.class).methods().size());
-		// TODO: with super type and no override (maybe in DefaultMethodsTest)
-		// TODO: with super type and override (maybe in DefaultMethodsTest)
-	}
-
-	@Test
 	public void testIsErasure(){
 		assertTrue(reflect(Object.class).isErasure());
 		assertFalse(reflect(ArrayList.class).isErasure());
@@ -129,6 +121,7 @@ public class DefaultClassTypeTest {
 	public void testIsSameType() {
 		assertTrue(reflect(ArrayList.class).isSameType(reflect(ArrayList.class)));
 		assertFalse(reflect(ArrayList.class).isSameType(reflector.reflect(int.class)));
+		// TODO: test the same thing with generic arguments
 	}
 
 	@Test
@@ -139,9 +132,14 @@ public class DefaultClassTypeTest {
 
 	@Test
 	public void testGetMethods() {
-		assertEquals(4, reflect(Object.class).methods().size());
-		// TODO: verify methods inherited from superclass but not overriden in subclass are present
-		// TODO: verify methods inherited from interface but not implemented in implementing class are present
+		// no super types, and no overriden methods
+		assertEquals(12, reflect(Object.class).methods().size());
+		// Overriden methods must be added only once
+		assertEquals(1, reflect(Integer.class).methods().withName("intValue").size());
+		// Methods in super types that are not overriden must be added
+		assertEquals(1, reflect(Number.class).methods().withName("hashCode").size());
+		// Methods declared in an interface but not implemented must still be added
+		assertEquals(1, reflect(AbstractCellEditor.class).methods().withName("getCellEditorValue").size());
 	}
 
 	@Test

@@ -56,6 +56,9 @@ public class DefaultReflector implements FullReflector {
 	}
 
 	public Type reflect(Class<?> clazz) {
+		if(clazz == null){
+			return null;
+		}
 		return typeCache.getOrInitClass(clazz);
 	}
 
