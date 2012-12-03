@@ -4,13 +4,11 @@ import static junit.framework.Assert.assertEquals;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Test;
 
-import reflekto.ClassType;
-import reflekto.Method;
-import reflekto.Methods;
 import reflekto.impl.DefaultReflector;
 
 public class DefaultMethodTest {
@@ -35,6 +33,8 @@ public class DefaultMethodTest {
 		assertDeclarationString(AbstractList.class, "get", "public abstract E get(int)");
 		// interface method
 		assertDeclarationString(Iterator.class, "hasNext", "public abstract boolean hasNext()");
+		// with type variable declaration
+		assertDeclarationString(Arrays.class, "asList", "public static <T> java.util.List<T> asList(T[])");
 	}
 
 	public void assertDeclarationString(Class<?> clazz, String methodName, String expectedDeclaration){

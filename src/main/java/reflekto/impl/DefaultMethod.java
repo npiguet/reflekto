@@ -172,7 +172,7 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 			builder.append("final ");
 		}
 		if(this.isStatic()) {
-			builder.append("static");
+			builder.append("static ");
 		}
 
 		// type parameters
