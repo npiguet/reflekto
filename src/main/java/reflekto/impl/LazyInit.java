@@ -22,4 +22,11 @@ public abstract class LazyInit<T> implements ReadOnlyReference<T> {
 
 	protected abstract T init();
 
+	@Override
+	public String toString() {
+		if(!initialized){
+			return "not initialized";
+		}
+		return "-> " + get();
+	}
 }

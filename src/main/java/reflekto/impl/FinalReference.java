@@ -11,4 +11,9 @@ public class FinalReference<T> implements ReadOnlyReference<T> {
 	public T get() {
 		return value;
 	}
+
+	@Override
+	public String toString(){
+		return "-> " + value;
+	}
 }

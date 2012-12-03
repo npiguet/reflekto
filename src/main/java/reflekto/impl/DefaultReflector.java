@@ -59,12 +59,12 @@ public class DefaultReflector implements FullReflector {
 		if(clazz == null){
 			return null;
 		}
-		return typeCache.getOrInitClass(clazz);
+		return typeCache.getOrInitClass(clazz, false);
 	}
 
 	public ClassType reflect(ParameterizedType type) {
 		// TODO: are those casts really safe? Check the javadoc of ParameterizedType.getRawType()
-		return (ClassType)typeCache.getOrInitClass((Class<?>)type.getRawType(), type.getActualTypeArguments());
+		return (ClassType)typeCache.getOrInitClass((Class<?>)type.getRawType(), false, type.getActualTypeArguments());
 	}
 
 	protected Type reflectPrimitive(Class<?> clazz){
@@ -128,8 +128,10 @@ public class DefaultReflector implements FullReflector {
 		return new DefaultMethod(m, declaringClass, this);
 	}
 
-	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeParameters) {
-		return new DefaultClassType((DefaultClassType) original, actualTypeParameters);
+	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeParameters, boolean asErasure) {
+		// FIXME: use typecache instead of creating the instance directly. However for this to work, there must be some kind of way to transform
+		//        the actualTypeParameters into object from java.lang.reflect that can be used as lookup keys.
+		return new DefaultClassType((DefaultClassType) original, actualTypeParameters, asErasure);
 	}
 
 	public WildcardType reflectGenericInvocation(WildcardType original, List<Type> lowerBounds, List<Type> upperBounds) {
@@ -138,10 +140,6 @@ public class DefaultReflector implements FullReflector {
 
 	public ArrayType reflectGenericInvocation(ArrayType original, Type elementType) {
 		return new DefaultArrayType((DefaultArrayType) original, elementType);
-	}
-
-	public ClassType reflectErasure(ClassType original) {
-		return new DefaultClassType((DefaultClassType)original);
 	}
 
 	public Method reflectErasure(Method original) {

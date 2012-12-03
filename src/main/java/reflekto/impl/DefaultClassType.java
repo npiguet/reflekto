@@ -54,6 +54,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			return initEnclosingClass();
 		}
 	};
+	private final boolean isErasure;
 
 	@SuppressWarnings("unchecked")
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
@@ -67,40 +68,19 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		// Yes, I know this is ugly, but since all of the involved objects are effectively final,
 		// it is effectively safe, and makes my life easier than carrying around two levels of wildcard types.
 		this.actualTypeParameters = (ReadOnlyReference<List<Type>>)(Object)this.declaredTypeParameters;
+		this.isErasure = false;
 	}
 
 	/**
 	 * Builds a copy of the original DefaultClassType, replacing the list of type parameters, methods, constructors and fields iif the specified
 	 * one is not null.
 	 */
-	protected DefaultClassType(DefaultClassType original, List<Type> actualTypeParameters) {
+	protected DefaultClassType(DefaultClassType original, List<Type> actualTypeParameters, boolean isErasure) {
 		super(original.clazz, original.reflector);
 		this.declaredTypeParameters = original.declaredTypeParameters;
 		List<Type> unmodifiable = Collections.unmodifiableList(new ArrayList<Type>(actualTypeParameters));
 		this.actualTypeParameters = new FinalReference<List<Type>>(unmodifiable);
-	}
-
-	/**
-	 * Builds an copy of the original DefaultClassType with all the type parameters erased.
-	 */
-	protected DefaultClassType(DefaultClassType original){
-		super(original.clazz, original.reflector);
-		this.declaredTypeParameters = original.declaredTypeParameters;
-		this.actualTypeParameters = new FinalReference<List<Type>>(Collections.<Type>emptyList());
-	}
-
-	protected DefaultClassType(final DefaultClassType original, List<TypeVariable> vars, List<Type> values){
-		super(original.clazz, original.reflector);
-		this.declaredTypeParameters = original.declaredTypeParameters;
-
-		final List<TypeVariable> safeVars = new ArrayList<TypeVariable>(vars);
-		final List<Type> safeValues = new ArrayList<Type>(values);
-		this.actualTypeParameters = new LazyInit<List<Type>>(){
-			@Override
-			protected List<Type> init() {
-				return initActualTypeParameters(original, safeVars, safeValues);
-			}
-		};
+		this.isErasure = isErasure;
 	}
 
 	private List<TypeVariable> initTypeParameters() {
@@ -176,26 +156,21 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return (ClassType)reflector.reflect(clazz.getEnclosingClass());
 	}
 
-	private List<Type> initActualTypeParameters(DefaultClassType original, List<TypeVariable> variables, List<Type> values) {
-		List<Type> actual = new ArrayList<Type>(getDeclaredTypeParameters().size());
-		for(Type originalTypeArg : original.getActualTypeParameters()){
-			actual.add(originalTypeArg.assignVariables(variables, values));
-		}
-		return Collections.unmodifiableList(actual);
-	}
-
 	public List<TypeVariable> getTypeParameters() {
 		return declaredTypeParameters.get();
 	}
 
 	public ClassType assignVariables(List<TypeVariable> variables, List<Type> values){
-		// TODO use a method from the reflector instead
-		// FIXME: Do not construct a new instance of ClassType if there is another one that already exists
-		return new DefaultClassType(this, variables, values);
+		List<Type> actual = new ArrayList<Type>(getDeclaredTypeParameters().size());
+		for(Type originalTypeArg : this.getActualTypeParameters()){
+			actual.add(originalTypeArg.assignVariables(variables, values));
+		}
+
+		return reflector.reflectGenericInvocation(this, actual, false);
 	}
 
 	public ClassType getGenericInvocation(List<Type> values) {
-		return reflector.reflectGenericInvocation(this, values);
+		return reflector.reflectGenericInvocation(this, values, false);
 	}
 
 	public ClassType getGenericInvocation(ClassType genericDeclaringClass) {
@@ -208,11 +183,19 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		if(isErasure()){
 			return this;
 		}
-		return reflector.reflectErasure(this);
+		// TODO: handle inner classes whose outer types are parameterized
+
+		// calculate the erased types of the type parameters of this class
+		List<Type> erasedTypeParameters = new ArrayList<Type>(this.getDeclaredTypeParameters().size());
+		for(Type t : this.getDeclaredTypeParameters()){
+			erasedTypeParameters.add(t.withErasure());
+		}
+
+		return reflector.reflectGenericInvocation(this, erasedTypeParameters, true);
 	}
 
 	public boolean isErasure() {
-		return getActualTypeParameters().isEmpty();
+		return this.isErasure;
 	}
 
 	public boolean isParameterizable() {
@@ -303,7 +286,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 			}
 
 			public String buildName(String className, TypeName.Kind kind){
-				if(actualTypeParameters.get().isEmpty()){
+				if(actualTypeParameters.get().isEmpty() || DefaultClassType.this.isErasure()){
 					return className;
 				}
 				StringBuilder s = new StringBuilder();

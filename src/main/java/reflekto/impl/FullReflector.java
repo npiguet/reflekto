@@ -17,6 +17,7 @@ public interface FullReflector extends Reflector {
 	public Type reflect(java.lang.reflect.Type type);
 
 	public ClassType reflect(java.lang.reflect.ParameterizedType type);
+	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeArguments, boolean asErasure);
 
 	public TypeVariable reflect(java.lang.reflect.TypeVariable<?> var);
 
@@ -25,10 +26,6 @@ public interface FullReflector extends Reflector {
 	public Field reflect(java.lang.reflect.Field f, ClassType declaringClass);
 
 	public Method reflect(java.lang.reflect.Method m, ClassType declaringClass);
-
-	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeArguments);
-
-	public ClassType reflectErasure(ClassType original);
 
 	public Method reflectErasure(Method original);
 

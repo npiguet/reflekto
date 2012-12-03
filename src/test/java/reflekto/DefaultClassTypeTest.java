@@ -1,8 +1,8 @@
 package reflekto;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
@@ -102,8 +102,9 @@ public class DefaultClassTypeTest {
 
 	@Test
 	public void testIsErasure(){
-		assertTrue(reflect(Object.class).isErasure());
+		assertFalse(reflect(Object.class).isErasure());
 		assertFalse(reflect(ArrayList.class).isErasure());
+		assertTrue(reflect(ArrayList.class).withErasure().isErasure());
 	}
 
 	@Test

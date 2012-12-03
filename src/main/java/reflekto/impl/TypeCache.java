@@ -12,8 +12,8 @@ public abstract class TypeCache {
 	private final ConcurrentHashMap<java.lang.reflect.WildcardType, WildcardType> wildcards =
 			new ConcurrentHashMap<java.lang.reflect.WildcardType, WildcardType>();
 
-	public Type getOrInitClass(Class<?> clazz, java.lang.reflect.Type... typeArguments){
-		TypeKey key = new TypeKey(clazz, typeArguments);
+	public Type getOrInitClass(Class<?> clazz, boolean isErasure, java.lang.reflect.Type... typeArguments){
+		TypeKey key = new TypeKey(clazz, isErasure, typeArguments);
 		Type result = classes.get(key);
 		if(result == null){
 			Type t = initClass(clazz, typeArguments);
@@ -48,10 +48,12 @@ public abstract class TypeCache {
 
 	private static class TypeKey {
 		Class<?> clazz;
+		boolean isErasure;
 		java.lang.reflect.Type[] typeArguments;
 
-		public TypeKey(Class<?> clazz, java.lang.reflect.Type[] typeArguments){
+		public TypeKey(Class<?> clazz, boolean isErasure, java.lang.reflect.Type[] typeArguments){
 			this.clazz = clazz;
+			this.isErasure = isErasure;
 			this.typeArguments = typeArguments;
 		}
 
@@ -59,6 +61,7 @@ public abstract class TypeCache {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 19;
+			result = prime * result + (isErasure ? 1231 : 1237);
 			result = prime * result + clazz.hashCode();
 			result = prime * result + Arrays.hashCode(typeArguments);
 			return result;
@@ -74,7 +77,9 @@ public abstract class TypeCache {
 			}
 
 			TypeKey that = (TypeKey) obj;
-			return clazz.equals(that.clazz) && Arrays.equals(typeArguments, that.typeArguments);
+			return clazz.equals(that.clazz) && //
+					Arrays.equals(typeArguments, that.typeArguments) && //
+					isErasure == that.isErasure;
 		}
 	}
 }
