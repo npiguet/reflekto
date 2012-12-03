@@ -64,13 +64,34 @@ public class DefaultArrayType extends AbstractElement implements ArrayType {
 	}
 
 	public TypeName getRawName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getGenericName();
 	}
 
 	public TypeName getGenericName() {
-		// TODO Auto-generated method stub
-		return null;
+		return new AbstractTypeName(){
+			public String full() {
+				return buildName(TypeName.Kind.FULL);
+			}
+
+			public String simple() {
+				return buildName(TypeName.Kind.SIMPLE);
+			}
+
+			public String canonical() {
+				return buildName(TypeName.Kind.CANONICAL);
+			}
+
+			private String buildName(TypeName.Kind kind){
+				Type t = DefaultArrayType.this.getElementType();
+				String elementTypeName;
+				if(t instanceof TypeVariable){
+					elementTypeName = t.getGenericName().simple();
+				} else {
+					elementTypeName = t.getGenericName().get(kind);
+				}
+				return elementTypeName + "[]";
+			}
+		};
 	}
 
 	public ArrayType assignVariables(List<TypeVariable> variables, List<Type> values) {
