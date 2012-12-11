@@ -142,4 +142,8 @@ public class DefaultMethods implements Methods {
 		}
 		return null;
 	}
+
+	public List<Method> asList(){
+		return new ArrayList<Method>(methods);
+	}
 }

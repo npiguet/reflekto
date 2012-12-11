@@ -1,5 +1,7 @@
 package reflekto;
 
+import java.util.List;
+
 
 public interface Methods extends Iterable<Method> {
 
@@ -16,6 +18,8 @@ public interface Methods extends Iterable<Method> {
 	public Method getExact(ClassType... parameterTypes);
 	public Method getOverriding(Method overriden);
 	public Method getOverridden(Method overriding);
+
+	public List<Method> asList();
 
 	public static interface Filter {
 		public boolean accepts(Method m);
