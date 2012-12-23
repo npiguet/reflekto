@@ -1,5 +1,6 @@
 package reflekto;
 
+import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -103,9 +104,14 @@ public class DefaultClassTypeTest {
 
 	@Test
 	public void testIsErasure(){
+		// no class is erased by default, because of Object.getClass() which returns Class<?>
 		assertFalse(reflect(Object.class).isErasure());
+		// By default ArrayList is definitely not erased
 		assertFalse(reflect(ArrayList.class).isErasure());
+		// Erasure types are erased
 		assertTrue(reflect(ArrayList.class).withErasure().isErasure());
+		// The erasure of an erased type is itself
+		assertSame(reflect(HashMap.class).withErasure(), reflect(HashMap.class).withErasure().withErasure());
 	}
 
 	@Test
@@ -114,8 +120,11 @@ public class DefaultClassTypeTest {
 		ClassType erased = reflect(ArrayList.class).withErasure();
 
 		// then
+		// the class itself is erased
 		assertTrue(erased.isErasure());
+		// the name reflects the erasure
 		assertEquals("java.util.ArrayList", erased.getName());
+		// methods that use type variables are erased
 		assertEquals("public java.lang.Object get(int)", erased.methods().withName("get").get(0).declarationString());
 	}
 
