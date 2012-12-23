@@ -1,27 +1,13 @@
 package reflekto;
 
-import java.util.List;
 
 
-public interface Methods extends Iterable<Method> {
+public interface Methods extends MemberCollection<Method, Methods> {
 
-	public Methods withAccess(AccessFilter accessFilter);
-	public Methods withName(String name);
-	public Methods withAbstract(boolean isAbstract);
-	public Methods withFinal(boolean isFinal);
-	public Methods withInherited(boolean inherited);
-	public Methods withFilter(Filter filter);
-
-	public int size();
-	public Method get(int index);
 	public Method getMostSpecific(ClassType... parameterTypes);
 	public Method getExact(ClassType... parameterTypes);
 	public Method getOverriding(Method overriden);
 	public Method getOverridden(Method overriding);
 
-	public List<Method> asList();
-
-	public static interface Filter {
-		public boolean accepts(Method m);
-	}
+	public static interface Filter extends MemberCollection.Filter<Method>{}
 }

@@ -2,6 +2,7 @@ package reflekto.impl;
 
 import java.util.List;
 
+import reflekto.AccessModifier;
 import reflekto.ClassType;
 import reflekto.Constructor;
 import reflekto.Type;
@@ -37,6 +38,46 @@ public class DefaultConstructor extends AbstractMember implements Constructor {
 	}
 
 	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isAccessibleFrom(ClassType clazz) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isPublic() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isPackageProtected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isProtected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isPrivate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAbstract() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isFinal() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public AccessModifier getAccessModifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}
