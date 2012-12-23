@@ -1,12 +1,10 @@
 package reflekto.impl;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import reflekto.AccessFilter;
-import reflekto.AccessModifier;
 import reflekto.ClassType;
 import reflekto.Method;
 import reflekto.Parameterizable;
@@ -285,80 +283,9 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 		return null;
 	}
 
-
-	public boolean isPublic() {
-		return Modifier.isPublic(method.getModifiers());
-	}
-
-
-	public boolean isPackageProtected() {
-		return !isPublic() && !isProtected() && !isPrivate();
-	}
-
-
-	public boolean isProtected() {
-		return Modifier.isProtected(method.getModifiers());
-	}
-
-
-	public boolean isPrivate() {
-		return Modifier.isPrivate(method.getModifiers());
-	}
-
-
-	public boolean isAbstract() {
-		return Modifier.isAbstract(method.getModifiers());
-	}
-
-
-	public boolean isFinal() {
-		return Modifier.isFinal(method.getModifiers());
-	}
-
-	public boolean isStatic(){
-		return Modifier.isStatic(method.getModifiers());
-	}
-
-	public boolean isAccessibleFrom(ClassType caller) {
-		// caller is the same class as declaringClass
-		// PRIVATE is visible
-		if(this.declaringClass.getDeclaredClass().equals(caller.getDeclaredClass())){
-			return AccessFilter.PRIVATE.andMoreLenient().accepts(getAccessModifier());
-		}
-
-		// caller is an inner class (at any depth) of declaringClass, or vice-versa
-		// PRIVATE is visible
-		if(declaringClass.isInnerClassOf(caller) || caller.isInnerClassOf(declaringClass)){
-			return AccessFilter.PRIVATE.andMoreLenient().accepts(getAccessModifier());
-		}
-
-		// caller is in the same package as declaringClass
-		// PACKAGE is visible
-		if(this.declaringClass.getPackage().equals(caller.getPackage())){
-			return AccessFilter.PACKAGE.andMoreLenient().accepts(getAccessModifier());
-		}
-
-		// caller is a subType of declaringClass
-		// PROTECTED is visible
-		if(declaringClass.isSuperClassOf(caller)){
-			return AccessFilter.PROTECTED.andMoreLenient().accepts(getAccessModifier());
-		}
-
-		// caller is a superType of declaringClass
-		// AND and this method overrides a method in caller
-		// PROTECTED is visible
-		if(caller.isSuperClassOf(declaringClass) && //
-				caller.methods().getOverridden(this) != null) {
-			return AccessFilter.PROTECTED.andMoreLenient().accepts(getAccessModifier());
-		}
-
-		// caller has no relation to declaringClass
-		// PUBLIC is visible
-		return AccessFilter.PUBLIC.accepts(getAccessModifier());
-	}
-
-	public AccessModifier getAccessModifier() {
-		return AccessModifier.fromModifier(method.getModifiers());
+	@Override
+	protected int getJavaModifiers(){
+		return method.getModifiers();
 	}
 
 	public boolean overrides(Method m2) {
@@ -463,5 +390,17 @@ public class DefaultMethod extends AbstractCallableMember implements Method {
 	public Method assignTypeVariables(List<TypeVariable> vars, List<Type> values) {
 		// TODO: code it
 		return null;
+	}
+
+	@Override
+	protected boolean isAccessibleFromInternal(ClassType caller) {
+		// caller is a superType of declaringClass
+		// AND and this method overrides a method in caller
+		// PROTECTED is visible
+		if(caller.isSuperClassOf(declaringClass) && //
+				caller.methods().getOverridden(this) != null) {
+			return AccessFilter.PROTECTED.andMoreLenient().accepts(getAccessModifier());
+		}
+		return false;
 	}
 }

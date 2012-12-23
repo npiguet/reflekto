@@ -20,7 +20,7 @@ public class DefaultMethods extends AbstractMemberCollection<Method, Methods> im
 
 	@Override
 	protected boolean canInheritedMemberBeAdded(Method method){
-		return this.getOverriding(method) == null;
+		return this.getOverriding(method) == null && !method.isPrivate();
 	}
 
 	@Override
