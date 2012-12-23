@@ -2,6 +2,7 @@ package reflekto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.event.MouseAdapter;
@@ -141,6 +142,8 @@ public class DefaultClassTypeTest {
 		assertEquals(1, reflect(Number.class).methods().withName("hashCode").size());
 		// Methods declared in an interface but not implemented must still be added
 		assertEquals(1, reflect(AbstractCellEditor.class).methods().withName("getCellEditorValue").size());
+		// Private methods of super classes must not be added
+		assertNull(reflect(HashMap.class).methods().withName("eq").get());
 	}
 
 	@Test
