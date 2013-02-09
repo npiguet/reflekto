@@ -127,7 +127,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		}
 
 		List<Method> thisMethods = initThisClassMethods();
-		return new DefaultMethods(thisMethods, superTypesMethods);
+		return new Methods(thisMethods, superTypesMethods);
 	}
 
 	private List<Method> initThisClassMethods() {
