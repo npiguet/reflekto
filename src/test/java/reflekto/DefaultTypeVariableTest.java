@@ -9,7 +9,6 @@ import org.junit.Test;
 import reflekto.TypeName;
 import reflekto.TypeVariable;
 import reflekto.impl.DefaultClassType;
-import reflekto.impl.DefaultReflector;
 
 public class DefaultTypeVariableTest {
 

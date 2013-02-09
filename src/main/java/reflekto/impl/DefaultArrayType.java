@@ -2,6 +2,7 @@ package reflekto.impl;
 
 import java.util.List;
 
+import reflekto.AbstractElement;
 import reflekto.ArrayType;
 import reflekto.Type;
 import reflekto.TypeName;

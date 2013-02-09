@@ -1,5 +1,6 @@
 package reflekto.impl;
 
+import reflekto.AbstractElement;
 import reflekto.Type;
 import reflekto.TypeName;
 

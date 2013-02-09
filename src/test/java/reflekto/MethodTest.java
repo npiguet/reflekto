@@ -9,9 +9,8 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import reflekto.impl.DefaultReflector;
 
-public class DefaultMethodTest {
+public class MethodTest {
 
 	private DefaultReflector reflector = new DefaultReflector();
 

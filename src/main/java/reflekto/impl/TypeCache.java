@@ -3,6 +3,7 @@ package reflekto.impl;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
+import reflekto.ClassType;
 import reflekto.Type;
 import reflekto.WildcardType;
 
@@ -44,9 +45,14 @@ public abstract class TypeCache {
 	}
 
 	public abstract Type initClass(Class<?> clazz, java.lang.reflect.Type[] typeArguments);
+	public abstract String buildClassKey(Class<?> clazz, java.lang.reflect.Type[] typeArgument);
+	public abstract String buildClassKey(ClassType clazz, Type[] typeArguments, boolean isErasure);
 	public abstract WildcardType initWildcard(java.lang.reflect.WildcardType jWildcard);
 
 	private static class TypeKey {
+		// TODO: use some version of toString as the type key instead of this object.
+		//       this should make it possible to use both java.lang.reflect and
+		//       reflekto objects to lookup classes in the cache.
 		Class<?> clazz;
 		boolean isErasure;
 		java.lang.reflect.Type[] typeArguments;

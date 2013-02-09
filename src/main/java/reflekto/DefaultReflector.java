@@ -1,26 +1,24 @@
-package reflekto.impl;
+package reflekto;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import reflekto.ArrayType;
-import reflekto.ClassType;
-import reflekto.Constructor;
-import reflekto.Field;
-import reflekto.GenericDeclaration;
-import reflekto.Method;
-import reflekto.Type;
-import reflekto.TypeVariable;
-import reflekto.WildcardType;
+import reflekto.impl.DefaultArrayType;
+import reflekto.impl.DefaultClassType;
+import reflekto.impl.DefaultPrimitiveType;
+import reflekto.impl.DefaultTypeVariable;
+import reflekto.impl.DefaultWildcardType;
+import reflekto.impl.FullReflector;
+import reflekto.impl.TypeCache;
 
 public class DefaultReflector implements FullReflector {
 
-	protected TypeCache typeCache = new TypeCache(){
+	protected TypeCache typeCache = new TypeCache() {
 		@Override
 		public Type initClass(Class<?> rawClass, java.lang.reflect.Type[] typeArguments) {
-			if(typeArguments.length > 0){
+			if (typeArguments.length > 0) {
 				return reflectParameterizedClass(rawClass, typeArguments);
 			}
 			if (rawClass.isPrimitive()) {
@@ -36,27 +34,39 @@ public class DefaultReflector implements FullReflector {
 		public WildcardType initWildcard(java.lang.reflect.WildcardType jWildcard) {
 			return reflect(jWildcard);
 		}
+
+		@Override
+		public String buildClassKey(Class<?> rawClass, java.lang.reflect.Type[] typeArguments) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String buildClassKey(ClassType clazz, Type[] typeArguments, boolean isErasure) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	};
 
 	public Type reflect(java.lang.reflect.Type type) {
-		if(type == null){
+		if (type == null) {
 			return null;
-		} else if (type instanceof Class){
+		} else if (type instanceof Class) {
 			return reflect((Class<?>) type);
-		} else if (type instanceof java.lang.reflect.GenericArrayType){
-			return reflect((java.lang.reflect.GenericArrayType)type);
-		} else if (type instanceof java.lang.reflect.TypeVariable){
-			return reflect((java.lang.reflect.TypeVariable<?>)type);
-		} else if (type instanceof java.lang.reflect.WildcardType){
-			return reflect((java.lang.reflect.WildcardType)type);
-		} else if (type instanceof java.lang.reflect.ParameterizedType){
-			return reflect((java.lang.reflect.ParameterizedType)type);
+		} else if (type instanceof java.lang.reflect.GenericArrayType) {
+			return reflect((java.lang.reflect.GenericArrayType) type);
+		} else if (type instanceof java.lang.reflect.TypeVariable) {
+			return reflect((java.lang.reflect.TypeVariable<?>) type);
+		} else if (type instanceof java.lang.reflect.WildcardType) {
+			return reflect((java.lang.reflect.WildcardType) type);
+		} else if (type instanceof java.lang.reflect.ParameterizedType) {
+			return reflect((java.lang.reflect.ParameterizedType) type);
 		}
 		throw new IllegalStateException();
 	}
 
 	public Type reflect(Class<?> clazz) {
-		if(clazz == null){
+		if (clazz == null) {
 			return null;
 		}
 		return typeCache.getOrInitClass(clazz, false);
@@ -64,37 +74,37 @@ public class DefaultReflector implements FullReflector {
 
 	public ClassType reflect(ParameterizedType type) {
 		// TODO: are those casts really safe? Check the javadoc of ParameterizedType.getRawType()
-		return (ClassType)typeCache.getOrInitClass((Class<?>)type.getRawType(), false, type.getActualTypeArguments());
+		return (ClassType) typeCache.getOrInitClass((Class<?>) type.getRawType(), false, type.getActualTypeArguments());
 	}
 
-	protected Type reflectPrimitive(Class<?> clazz){
+	protected Type reflectPrimitive(Class<?> clazz) {
 		assert clazz.isPrimitive();
 		return new DefaultPrimitiveType(clazz, this);
 	}
 
-	protected Type reflectArray(Class<?> clazz){
+	protected Type reflectArray(Class<?> clazz) {
 		assert clazz.isArray();
 		return new DefaultArrayType(clazz.getComponentType(), this);
 	}
 
-	protected Type reflect(java.lang.reflect.GenericArrayType type){
+	protected Type reflect(java.lang.reflect.GenericArrayType type) {
 		return new DefaultArrayType(type.getGenericComponentType(), this);
 	}
 
-	protected Type reflectClassOrInterface(Class<?> clazz){
+	protected Type reflectClassOrInterface(Class<?> clazz) {
 		assert !clazz.isPrimitive() && !clazz.isArray();
 		return new DefaultClassType(clazz, this);
 	}
 
-	public WildcardType reflect(java.lang.reflect.WildcardType jWildcard){
+	public WildcardType reflect(java.lang.reflect.WildcardType jWildcard) {
 		return new DefaultWildcardType(jWildcard, this);
 	}
 
 	protected Type reflectParameterizedClass(Class<?> jRawClass, java.lang.reflect.Type[] jTypeArguments) {
 		// TODO: is this cast really safe? Check the javadoc of ParameterizedType.getRawType()
-		ClassType rawClass = (ClassType)reflect(jRawClass);
+		ClassType rawClass = (ClassType) reflect(jRawClass);
 		List<Type> typeArguments = new ArrayList<Type>(jTypeArguments.length);
-		for(java.lang.reflect.Type arg : jTypeArguments){
+		for (java.lang.reflect.Type arg : jTypeArguments) {
 			typeArguments.add(reflect(arg));
 		}
 		return rawClass.getGenericInvocation(typeArguments);
@@ -103,11 +113,11 @@ public class DefaultReflector implements FullReflector {
 	public TypeVariable reflect(java.lang.reflect.TypeVariable<?> var) {
 		java.lang.reflect.GenericDeclaration jDeclaration = var.getGenericDeclaration();
 		GenericDeclaration declaration = null;
-		if(jDeclaration instanceof Class){
-			declaration = (ClassType)reflect((Class<?>)jDeclaration);
+		if (jDeclaration instanceof Class) {
+			declaration = (ClassType) reflect((Class<?>) jDeclaration);
 		} else if (jDeclaration instanceof java.lang.reflect.Method) {
-			java.lang.reflect.Method jMethod = (java.lang.reflect.Method)jDeclaration;
-			ClassType ownerClass = (ClassType)reflect(jMethod.getDeclaringClass());
+			java.lang.reflect.Method jMethod = (java.lang.reflect.Method) jDeclaration;
+			ClassType ownerClass = (ClassType) reflect(jMethod.getDeclaringClass());
 			declaration = reflect(jMethod, ownerClass);
 		} else if (jDeclaration instanceof java.lang.reflect.Constructor) {
 			// TODO
@@ -117,20 +127,21 @@ public class DefaultReflector implements FullReflector {
 	}
 
 	public Constructor reflect(java.lang.reflect.Constructor<?> cons, ClassType declaringClass) {
-		return new DefaultConstructor(cons, declaringClass, this);
+		return new Constructor(cons, declaringClass, this);
 	}
 
 	public Field reflect(java.lang.reflect.Field f, ClassType declaringClass) {
-		return new DefaultField(f, declaringClass, this);
+		return new Field(f, declaringClass, this);
 	}
 
 	public Method reflect(java.lang.reflect.Method m, ClassType declaringClass) {
-		return new DefaultMethod(m, declaringClass, this);
+		return new Method(m, declaringClass, this);
 	}
 
 	public ClassType reflectGenericInvocation(ClassType original, List<Type> actualTypeParameters, boolean asErasure) {
-		// FIXME: use typecache instead of creating the instance directly. However for this to work, there must be some kind of way to transform
-		//        the actualTypeParameters into object from java.lang.reflect that can be used as lookup keys.
+		// FIXME: use typecache instead of creating the instance directly. However for this to work, there must be some
+		// kind of way to transform
+		// the actualTypeParameters into object from java.lang.reflect that can be used as lookup keys.
 		return new DefaultClassType((DefaultClassType) original, actualTypeParameters, asErasure);
 	}
 
@@ -143,24 +154,32 @@ public class DefaultReflector implements FullReflector {
 	}
 
 	public Method reflectErasure(Method original) {
-		return new DefaultMethod((DefaultMethod)original);
+		return new Method(original);
 	}
 
 	public ArrayType reflectErasure(ArrayType original) {
-		return new DefaultArrayType((DefaultArrayType)original);
+		return new DefaultArrayType((DefaultArrayType) original);
 	}
 
-	public void clearTypeCache(){
+	public void clearTypeCache() {
 		this.typeCache.clear();
 	}
 
 	public static List<List<String>> E;
+	public static ArrayList F;
 
-	public static void main(String... args) throws SecurityException, NoSuchFieldException{
+	public static void main(String... args) throws SecurityException, NoSuchFieldException {
 		java.lang.reflect.Type t = DefaultReflector.class.getField("E").getGenericType();
 		System.out.println(t);
-		System.out.println(((ParameterizedType)t).getRawType());
-		System.out.println(((ParameterizedType)t).getOwnerType());
-		System.out.println(Arrays.toString(((ParameterizedType)t).getActualTypeArguments()));
+		System.out.println(((ParameterizedType) t).getRawType());
+		System.out.println(((ParameterizedType) t).getOwnerType());
+		System.out.println(Arrays.toString(((ParameterizedType) t).getActualTypeArguments()));
+
+		java.lang.reflect.Type t2 = DefaultReflector.class.getField("F").getGenericType();
+		System.out.println(t2);
+		System.out.println(((ParameterizedType) t2).getRawType());
+		System.out.println(((ParameterizedType) t2).getOwnerType());
+		System.out.println(Arrays.toString(((ParameterizedType) t2).getActualTypeArguments()));
+
 	}
 }

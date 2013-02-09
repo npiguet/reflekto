@@ -1,4 +1,6 @@
-package reflekto.impl;
+package reflekto;
+
+import reflekto.impl.FullReflector;
 
 
 public class AbstractElement {

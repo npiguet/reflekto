@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import reflekto.AbstractElement;
 import reflekto.Type;
 import reflekto.TypeName;
 import reflekto.TypeVariable;

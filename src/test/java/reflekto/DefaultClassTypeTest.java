@@ -21,7 +21,6 @@ import javax.swing.AbstractCellEditor;
 import org.junit.Test;
 
 import reflekto.impl.DefaultClassType;
-import reflekto.impl.DefaultReflector;
 
 public class DefaultClassTypeTest {
 	private DefaultReflector reflector = new DefaultReflector();

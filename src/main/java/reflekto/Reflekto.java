@@ -1,6 +1,5 @@
 package reflekto;
 
-import reflekto.impl.DefaultReflector;
 
 public class Reflekto {
 

@@ -18,37 +18,37 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	private final ReadOnlyReference<List<Type>> actualTypeParameters;
 	private final ReadOnlyReference<List<TypeVariable>> declaredTypeParameters;
-	private final ReadOnlyReference<Methods> methods = new LazyInit<Methods>(){
+	private final ReadOnlyReference<Methods> methods = new LazyInit<Methods>() {
 		@Override
 		protected Methods init() {
 			return initMethods();
 		}
 	};
-	private final ReadOnlyReference<List<Field>> fields = new LazyInit<List<Field>>(){
+	private final ReadOnlyReference<List<Field>> fields = new LazyInit<List<Field>>() {
 		@Override
 		protected List<Field> init() {
 			return initFields();
 		}
 	};
-	private final ReadOnlyReference<List<Constructor>> constructors = new LazyInit<List<Constructor>>(){
+	private final ReadOnlyReference<List<Constructor>> constructors = new LazyInit<List<Constructor>>() {
 		@Override
 		protected List<Constructor> init() {
 			return initConstructors();
 		}
 	};
-	private final ReadOnlyReference<ClassType> superClass = new LazyInit<ClassType>(){
+	private final ReadOnlyReference<ClassType> superClass = new LazyInit<ClassType>() {
 		@Override
 		protected ClassType init() {
 			return initSuperClass();
 		}
 	};
-	private final ReadOnlyReference<List<ClassType>> interfaces = new LazyInit<List<ClassType>>(){
+	private final ReadOnlyReference<List<ClassType>> interfaces = new LazyInit<List<ClassType>>() {
 		@Override
 		protected List<ClassType> init() {
 			return initInterfaces();
 		}
 	};
-	private final ReadOnlyReference<ClassType> enclosingClass = new LazyInit<ClassType>(){
+	private final ReadOnlyReference<ClassType> enclosingClass = new LazyInit<ClassType>() {
 		@Override
 		protected ClassType init() {
 			return initEnclosingClass();
@@ -59,7 +59,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	@SuppressWarnings("unchecked")
 	public DefaultClassType(Class<?> clazz, FullReflector creator) {
 		super(clazz, creator);
-		declaredTypeParameters = new LazyInit<List<TypeVariable>>(){
+		declaredTypeParameters = new LazyInit<List<TypeVariable>>() {
 			@Override
 			protected List<TypeVariable> init() {
 				return initTypeParameters();
@@ -67,15 +67,20 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		};
 		// Yes, I know this is ugly, but since all of the involved objects are effectively final,
 		// it is effectively safe, and makes my life easier than carrying around two levels of wildcard types.
-		this.actualTypeParameters = (ReadOnlyReference<List<Type>>)(Object)this.declaredTypeParameters;
+		this.actualTypeParameters = (ReadOnlyReference<List<Type>>) (Object) this.declaredTypeParameters;
 		this.isErasure = false;
 	}
 
 	/**
-	 * Builds a copy of the original DefaultClassType, replacing the list of type parameters, methods, constructors and fields iif the specified
-	 * one is not null.
+	 * Builds a copy of the original DefaultClassType, replacing the list of type parameters, methods, constructors and
+	 * fields iif the specified one is not null.
 	 */
-	protected DefaultClassType(DefaultClassType original, List<Type> actualTypeParameters, boolean isErasure) {
+	// FIXME
+	// FIXME
+	// FIXME
+	// FIXME
+	// FIXME: Shouldn't be public
+	public DefaultClassType(DefaultClassType original, List<Type> actualTypeParameters, boolean isErasure) {
 		super(original.clazz, original.reflector);
 		this.declaredTypeParameters = original.declaredTypeParameters;
 		List<Type> unmodifiable = Collections.unmodifiableList(new ArrayList<Type>(actualTypeParameters));
@@ -114,10 +119,10 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	private Methods initMethods() {
 		List<Methods> superTypesMethods = new ArrayList<Methods>();
-		if(this.getSuperClass() != null){
+		if (this.getSuperClass() != null) {
 			superTypesMethods.add(this.getSuperClass().methods());
 		}
-		for(ClassType iface : this.getInterfaces()){
+		for (ClassType iface : this.getInterfaces()) {
 			superTypesMethods.add(iface.methods());
 		}
 
@@ -125,44 +130,44 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return new DefaultMethods(thisMethods, superTypesMethods);
 	}
 
-	private List<Method> initThisClassMethods(){
+	private List<Method> initThisClassMethods() {
 		java.lang.reflect.Method[] jMethods = clazz.getDeclaredMethods();
 		List<Method> methods = new ArrayList<Method>();
-		for(java.lang.reflect.Method jMethod : jMethods){
+		for (java.lang.reflect.Method jMethod : jMethods) {
 			methods.add(reflector.reflect(jMethod, this));
 		}
 		return methods;
 	}
 
-	private ClassType initSuperClass(){
-		ClassType genericSuperClass = (ClassType)reflector.reflect(clazz.getGenericSuperclass());
-		if(genericSuperClass == null){
+	private ClassType initSuperClass() {
+		ClassType genericSuperClass = (ClassType) reflector.reflect(clazz.getGenericSuperclass());
+		if (genericSuperClass == null) {
 			return null;
 		}
 		return genericSuperClass.assignVariables(getDeclaredTypeParameters(), getActualTypeParameters());
 	}
 
-	private List<ClassType> initInterfaces(){
+	private List<ClassType> initInterfaces() {
 		java.lang.reflect.Type[] ifaces = clazz.getGenericInterfaces();
 		List<ClassType> types = new ArrayList<ClassType>(ifaces.length);
-		for(java.lang.reflect.Type iface : ifaces){
-			ClassType genericIface = (ClassType)reflector.reflect(iface);
+		for (java.lang.reflect.Type iface : ifaces) {
+			ClassType genericIface = (ClassType) reflector.reflect(iface);
 			types.add(genericIface.assignVariables(getDeclaredTypeParameters(), getActualTypeParameters()));
 		}
 		return Collections.unmodifiableList(types);
 	}
 
-	private ClassType initEnclosingClass(){
-		return (ClassType)reflector.reflect(clazz.getEnclosingClass());
+	private ClassType initEnclosingClass() {
+		return (ClassType) reflector.reflect(clazz.getEnclosingClass());
 	}
 
 	public List<TypeVariable> getTypeParameters() {
 		return declaredTypeParameters.get();
 	}
 
-	public ClassType assignVariables(List<TypeVariable> variables, List<Type> values){
+	public ClassType assignVariables(List<TypeVariable> variables, List<Type> values) {
 		List<Type> actual = new ArrayList<Type>(getDeclaredTypeParameters().size());
-		for(Type originalTypeArg : this.getActualTypeParameters()){
+		for (Type originalTypeArg : this.getActualTypeParameters()) {
 			actual.add(originalTypeArg.assignVariables(variables, values));
 		}
 
@@ -175,19 +180,19 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	public ClassType getGenericInvocation(ClassType genericDeclaringClass) {
 		// FIXME: attempt at creating a proper instance of a non-static inner class that lives inside a
-		//        generic invocation of its outer class
+		// generic invocation of its outer class
 		return null;
 	}
 
 	public ClassType withErasure() {
-		if(isErasure()){
+		if (isErasure()) {
 			return this;
 		}
 		// TODO: handle inner classes whose outer types are parameterized
 
 		// calculate the erased types of the type parameters of this class
 		List<Type> erasedTypeParameters = new ArrayList<Type>(this.getDeclaredTypeParameters().size());
-		for(Type t : this.getDeclaredTypeParameters()){
+		for (Type t : this.getDeclaredTypeParameters()) {
 			erasedTypeParameters.add(t.withErasure());
 		}
 
@@ -202,25 +207,25 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return true;
 	}
 
-	public boolean isGenericInvocation(){
+	public boolean isGenericInvocation() {
 		// the cast to object is ugly, but it is due to another ugly cast when
 		// initializing actualTypeParameters. It still works as expected.
-		return (Object)this.declaredTypeParameters != this.actualTypeParameters;
+		return (Object) this.declaredTypeParameters != this.actualTypeParameters;
 	}
 
 	public String declarationString() {
 		// declaration
 		StringBuilder s = new StringBuilder();
-		if(this.isPublic()){
+		if (this.isPublic()) {
 			s.append("public ");
 		}
-		if(this.isAbstract()){
+		if (this.isAbstract()) {
 			s.append("abstract ");
 		}
-		if(this.isFinal()){
+		if (this.isFinal()) {
 			s.append("final ");
 		}
-		if(this.isInterface()){
+		if (this.isInterface()) {
 			s.append("interface ");
 		} else if (this.isEnum()) {
 			s.append("enum ");
@@ -231,17 +236,17 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 		// extends
 		ClassType superClazz = superClass.get();
-		if(superClazz != null && !superClazz.getName().equals("java.lang.Object") && !this.isEnum()){
+		if (superClazz != null && !superClazz.getName().equals("java.lang.Object") && !this.isEnum()) {
 			s.append(" extends ");
 			s.append(superClazz.getName());
 		}
 
 		// implements
 		List<ClassType> ifaces = interfaces.get();
-		if(ifaces.size() > 0){
+		if (ifaces.size() > 0) {
 			s.append(" implements ");
-			for(int i = 0; i < ifaces.size(); i ++){
-				if(i > 0){
+			for (int i = 0; i < ifaces.size(); i++) {
+				if (i > 0) {
 					s.append(", ");
 				}
 				s.append(ifaces.get(i).getName());
@@ -267,12 +272,12 @@ public class DefaultClassType extends AbstractType implements ClassType {
 		return clazz.isInterface();
 	}
 
-	public boolean isEnum(){
+	public boolean isEnum() {
 		return clazz.isEnum();
 	}
 
 	public TypeName getGenericName() {
-		return new AbstractTypeName(){
+		return new AbstractTypeName() {
 			public String full() {
 				return buildName(clazz.getName(), TypeName.Kind.FULL);
 			}
@@ -285,19 +290,19 @@ public class DefaultClassType extends AbstractType implements ClassType {
 				return buildName(clazz.getCanonicalName(), TypeName.Kind.CANONICAL);
 			}
 
-			public String buildName(String className, TypeName.Kind kind){
-				if(actualTypeParameters.get().isEmpty() || DefaultClassType.this.isErasure()){
+			public String buildName(String className, TypeName.Kind kind) {
+				if (actualTypeParameters.get().isEmpty() || DefaultClassType.this.isErasure()) {
 					return className;
 				}
 				StringBuilder s = new StringBuilder();
 				s.append(className);
 				s.append('<');
-				for(int i = 0; i < actualTypeParameters.get().size(); i ++){
-					if(i > 0){
+				for (int i = 0; i < actualTypeParameters.get().size(); i++) {
+					if (i > 0) {
 						s.append(", ");
 					}
 					Type var = actualTypeParameters.get().get(i);
-					if(isGenericInvocation() && var instanceof TypeVariable){
+					if (isGenericInvocation() && var instanceof TypeVariable) {
 						s.append(var.getGenericName().simple());
 					} else {
 						s.append(var.getGenericName().get(kind));
@@ -332,21 +337,21 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public boolean isSameType(Type other) {
-		if(this == other){
+		if (this == other) {
 			return true;
 		}
-		if(other == null || ! (other instanceof ClassType)){
+		if (other == null || !(other instanceof ClassType)) {
 			return false;
 		}
-		ClassType that = (ClassType)other;
-		if(!this.getRawName().full().equals(that.getRawName().full())){
+		ClassType that = (ClassType) other;
+		if (!this.getRawName().full().equals(that.getRawName().full())) {
 			return false;
 		}
 
 		List<Type> thisParams = this.getActualTypeParameters();
 		List<Type> thatParams = that.getActualTypeParameters();
-		for(int i = 0; i < thisParams.size(); i ++){
-			if(!thisParams.get(i).isSameType(thatParams.get(i))){
+		for (int i = 0; i < thisParams.size(); i++) {
+			if (!thisParams.get(i).isSameType(thatParams.get(i))) {
 				return false;
 			}
 		}
@@ -382,7 +387,7 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public ClassType getDeclaredClass() {
-		return (ClassType)reflector.reflect(clazz);
+		return (ClassType) reflector.reflect(clazz);
 	}
 
 	public String getPackage() {
@@ -390,14 +395,14 @@ public class DefaultClassType extends AbstractType implements ClassType {
 	}
 
 	public boolean isInnerClassOf(ClassType enclosing) {
-		if(!this.isInnerClass()){
+		if (!this.isInnerClass()) {
 			return false;
 		}
 
 		ClassType thisEnclosing = getEnclosingClass().getDeclaredClass();
 		ClassType thatEnclosing = enclosing.getDeclaredClass();
-		while(thisEnclosing != null){
-			if(thisEnclosing.equals(thatEnclosing)){
+		while (thisEnclosing != null) {
+			if (thisEnclosing.equals(thatEnclosing)) {
 				return true;
 			}
 			thisEnclosing = thisEnclosing.getEnclosingClass().getDeclaredClass();
@@ -417,19 +422,19 @@ public class DefaultClassType extends AbstractType implements ClassType {
 
 	public boolean isSuperClassOf(ClassType that) {
 		// base cases
-		if(that.getDeclaredClass().equals(this.getDeclaredClass())){
+		if (that.getDeclaredClass().equals(this.getDeclaredClass())) {
 			return true;
 		}
-		if(that.getSuperClass() == null){
+		if (that.getSuperClass() == null) {
 			return false;
 		}
 
 		// recursion
-		if(this.isSuperClassOf(that.getSuperClass())){
+		if (this.isSuperClassOf(that.getSuperClass())) {
 			return true;
 		}
-		for(ClassType thatIface : that.getInterfaces()){
-			if(this.isSuperClassOf(thatIface)){
+		for (ClassType thatIface : that.getInterfaces()) {
+			if (this.isSuperClassOf(thatIface)) {
 				return true;
 			}
 		}

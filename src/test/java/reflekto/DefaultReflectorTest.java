@@ -9,7 +9,6 @@ import reflekto.Type;
 import reflekto.impl.DefaultArrayType;
 import reflekto.impl.DefaultClassType;
 import reflekto.impl.DefaultPrimitiveType;
-import reflekto.impl.DefaultReflector;
 
 public class DefaultReflectorTest {
 
