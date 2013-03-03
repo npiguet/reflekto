@@ -2,7 +2,6 @@ package reflekto;
 
 import java.lang.reflect.Modifier;
 
-import reflekto.impl.FullReflector;
 
 public abstract class Member extends AbstractElement implements Parameterizable {
 

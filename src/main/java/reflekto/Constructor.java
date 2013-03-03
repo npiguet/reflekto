@@ -2,7 +2,6 @@ package reflekto;
 
 import java.util.List;
 
-import reflekto.impl.FullReflector;
 
 public class Constructor extends CallableMember {
 

@@ -10,8 +10,6 @@ import reflekto.impl.DefaultClassType;
 import reflekto.impl.DefaultPrimitiveType;
 import reflekto.impl.DefaultTypeVariable;
 import reflekto.impl.DefaultWildcardType;
-import reflekto.impl.FullReflector;
-import reflekto.impl.TypeCache;
 
 public class DefaultReflector implements FullReflector {
 

@@ -1,11 +1,8 @@
-package reflekto.impl;
+package reflekto;
 
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
-import reflekto.ClassType;
-import reflekto.Type;
-import reflekto.WildcardType;
 
 public abstract class TypeCache {
 

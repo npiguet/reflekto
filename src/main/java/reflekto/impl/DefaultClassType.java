@@ -5,11 +5,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import reflekto.AbstractTypeName;
 import reflekto.ClassType;
 import reflekto.Constructor;
 import reflekto.Field;
+import reflekto.FinalReference;
+import reflekto.FullReflector;
+import reflekto.LazyInit;
 import reflekto.Method;
 import reflekto.Methods;
+import reflekto.ReadOnlyReference;
 import reflekto.Type;
 import reflekto.TypeName;
 import reflekto.TypeVariable;

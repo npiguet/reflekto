@@ -3,7 +3,12 @@ package reflekto.impl;
 import java.util.List;
 
 import reflekto.AbstractElement;
+import reflekto.AbstractTypeName;
 import reflekto.ArrayType;
+import reflekto.FinalReference;
+import reflekto.FullReflector;
+import reflekto.LazyInit;
+import reflekto.ReadOnlyReference;
 import reflekto.Type;
 import reflekto.TypeName;
 import reflekto.TypeVariable;

@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import reflekto.impl.FinalReference;
-import reflekto.impl.FullReflector;
-import reflekto.impl.LazyInit;
-import reflekto.impl.ReadOnlyReference;
 
 public class Method extends CallableMember implements GenericDeclaration {
 

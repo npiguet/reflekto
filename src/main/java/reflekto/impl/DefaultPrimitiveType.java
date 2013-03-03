@@ -2,6 +2,8 @@ package reflekto.impl;
 
 import java.util.List;
 
+import reflekto.AbstractTypeName;
+import reflekto.FullReflector;
 import reflekto.PrimitiveType;
 import reflekto.Type;
 import reflekto.TypeName;

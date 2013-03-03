@@ -1,4 +1,4 @@
-package reflekto.impl;
+package reflekto;
 
 
 public interface ReadOnlyReference<T> {

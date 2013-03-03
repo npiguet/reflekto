@@ -1,6 +1,5 @@
-package reflekto.impl;
+package reflekto;
 
-import reflekto.TypeName;
 
 public abstract class AbstractTypeName implements TypeName {
 

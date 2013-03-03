@@ -1,4 +1,4 @@
-package reflekto.impl;
+package reflekto;
 
 import java.util.concurrent.atomic.AtomicReference;
 

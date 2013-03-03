@@ -1,16 +1,7 @@
-package reflekto.impl;
+package reflekto;
 
 import java.util.List;
 
-import reflekto.ArrayType;
-import reflekto.ClassType;
-import reflekto.Constructor;
-import reflekto.Field;
-import reflekto.Method;
-import reflekto.Reflector;
-import reflekto.Type;
-import reflekto.TypeVariable;
-import reflekto.WildcardType;
 
 public interface FullReflector extends Reflector {
 

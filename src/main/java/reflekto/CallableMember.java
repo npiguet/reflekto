@@ -1,6 +1,5 @@
 package reflekto;
 
-import reflekto.impl.FullReflector;
 
 public abstract class CallableMember extends Member {
 

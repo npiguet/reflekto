@@ -1,4 +1,4 @@
-package reflekto.impl;
+package reflekto;
 
 public class FinalReference<T> implements ReadOnlyReference<T> {
 
