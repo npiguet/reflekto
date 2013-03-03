@@ -5,33 +5,28 @@ import static junit.framework.Assert.assertTrue;
 
 import org.junit.Test;
 
-import reflekto.Type;
-import reflekto.impl.DefaultArrayType;
-import reflekto.impl.DefaultClassType;
-import reflekto.impl.DefaultPrimitiveType;
-
 public class DefaultReflectorTest {
 
-	private DefaultReflector reflector = new DefaultReflector();
+	private CachingReflector reflector = new CachingReflector();
 
 	@Test
 	public void testReflectNativeType() {
 		Type t = reflector.reflect(int.class);
-		assertTrue(t instanceof DefaultPrimitiveType);
+		assertTrue(t instanceof PrimitiveType);
 		assertEquals("int", t.toString());
 	}
 
 	@Test
 	public void testReflectClass() {
 		Type t = reflector.reflect(Object.class);
-		assertTrue(t instanceof DefaultClassType);
+		assertTrue(t instanceof ClassType);
 		assertEquals("java.lang.Object", t.toString());
 	}
 
 	@Test
 	public void testReflectArray() {
 		Type t = reflector.reflect(Object[].class);
-		assertTrue(t instanceof DefaultArrayType);
+		assertTrue(t instanceof ArrayType);
 		assertEquals("java.lang.Object[]", t.toString());
 	}
 }

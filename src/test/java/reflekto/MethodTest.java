@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class MethodTest {
 
-	private DefaultReflector reflector = new DefaultReflector();
+	private CachingReflector reflector = new CachingReflector();
 
 	@Test
 	public void testDeclarationString(){

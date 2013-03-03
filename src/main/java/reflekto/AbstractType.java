@@ -1,10 +1,5 @@
-package reflekto.impl;
+package reflekto;
 
-import reflekto.AbstractElement;
-import reflekto.AbstractTypeName;
-import reflekto.FullReflector;
-import reflekto.Type;
-import reflekto.TypeName;
 
 public abstract class AbstractType extends AbstractElement implements Type {
 

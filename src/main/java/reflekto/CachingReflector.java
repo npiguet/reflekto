@@ -5,13 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import reflekto.impl.DefaultArrayType;
-import reflekto.impl.DefaultClassType;
-import reflekto.impl.DefaultPrimitiveType;
-import reflekto.impl.DefaultTypeVariable;
-import reflekto.impl.DefaultWildcardType;
-
-public class DefaultReflector implements FullReflector {
+public class CachingReflector implements FullReflector {
 
 	protected TypeCache typeCache = new TypeCache() {
 		@Override
@@ -77,25 +71,25 @@ public class DefaultReflector implements FullReflector {
 
 	protected Type reflectPrimitive(Class<?> clazz) {
 		assert clazz.isPrimitive();
-		return new DefaultPrimitiveType(clazz, this);
+		return new PrimitiveType(clazz, this);
 	}
 
 	protected Type reflectArray(Class<?> clazz) {
 		assert clazz.isArray();
-		return new DefaultArrayType(clazz.getComponentType(), this);
+		return new ArrayType(clazz.getComponentType(), this);
 	}
 
 	protected Type reflect(java.lang.reflect.GenericArrayType type) {
-		return new DefaultArrayType(type.getGenericComponentType(), this);
+		return new ArrayType(type.getGenericComponentType(), this);
 	}
 
 	protected Type reflectClassOrInterface(Class<?> clazz) {
 		assert !clazz.isPrimitive() && !clazz.isArray();
-		return new DefaultClassType(clazz, this);
+		return new ClassType(clazz, this);
 	}
 
 	public WildcardType reflect(java.lang.reflect.WildcardType jWildcard) {
-		return new DefaultWildcardType(jWildcard, this);
+		return new WildcardType(jWildcard, this);
 	}
 
 	protected Type reflectParameterizedClass(Class<?> jRawClass, java.lang.reflect.Type[] jTypeArguments) {
@@ -121,7 +115,7 @@ public class DefaultReflector implements FullReflector {
 			// TODO
 			throw new UnsupportedOperationException();
 		}
-		return new DefaultTypeVariable(var, declaration, this);
+		return new TypeVariable(var, declaration, this);
 	}
 
 	public Constructor reflect(java.lang.reflect.Constructor<?> cons, ClassType declaringClass) {
@@ -140,15 +134,15 @@ public class DefaultReflector implements FullReflector {
 		// FIXME: use typecache instead of creating the instance directly. However for this to work, there must be some
 		// kind of way to transform
 		// the actualTypeParameters into object from java.lang.reflect that can be used as lookup keys.
-		return new DefaultClassType((DefaultClassType) original, actualTypeParameters, asErasure);
+		return new ClassType(original, actualTypeParameters, asErasure);
 	}
 
 	public WildcardType reflectGenericInvocation(WildcardType original, List<Type> lowerBounds, List<Type> upperBounds) {
-		return new DefaultWildcardType((DefaultWildcardType) original, lowerBounds, upperBounds);
+		return new WildcardType(original, lowerBounds, upperBounds);
 	}
 
 	public ArrayType reflectGenericInvocation(ArrayType original, Type elementType) {
-		return new DefaultArrayType((DefaultArrayType) original, elementType);
+		return new ArrayType(original, elementType);
 	}
 
 	public Method reflectErasure(Method original) {
@@ -156,24 +150,27 @@ public class DefaultReflector implements FullReflector {
 	}
 
 	public ArrayType reflectErasure(ArrayType original) {
-		return new DefaultArrayType((DefaultArrayType) original);
+		return new ArrayType(original);
 	}
 
 	public void clearTypeCache() {
 		this.typeCache.clear();
 	}
 
+	// ======== The section below here is not functional. This is just for doing some tests
+	// ======== when i am unsure of the meaning of a method.
 	public static List<List<String>> E;
+	@SuppressWarnings("rawtypes")
 	public static ArrayList F;
 
 	public static void main(String... args) throws SecurityException, NoSuchFieldException {
-		java.lang.reflect.Type t = DefaultReflector.class.getField("E").getGenericType();
+		java.lang.reflect.Type t = CachingReflector.class.getField("E").getGenericType();
 		System.out.println(t);
 		System.out.println(((ParameterizedType) t).getRawType());
 		System.out.println(((ParameterizedType) t).getOwnerType());
 		System.out.println(Arrays.toString(((ParameterizedType) t).getActualTypeArguments()));
 
-		java.lang.reflect.Type t2 = DefaultReflector.class.getField("F").getGenericType();
+		java.lang.reflect.Type t2 = CachingReflector.class.getField("F").getGenericType();
 		System.out.println(t2);
 		System.out.println(((ParameterizedType) t2).getRawType());
 		System.out.println(((ParameterizedType) t2).getOwnerType());
